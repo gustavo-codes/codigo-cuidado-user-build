@@ -1,0 +1,171 @@
+/* ================= VARIÁVEIS DE TEMA DINÂMICAS ================= */
+:root {
+    --cor-tema: #00897b;
+    --cor-tema-escuro: #004d40;
+    --cor-tema-claro: #e0f2f1;
+}
+
+body::before {
+    content: "🩺📋"; position: absolute; font-size: 250px; opacity: 0.05; z-index: -1;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); letter-spacing: -20px;
+
+    /* NOVO: Impede quebra de linha em telas pequenas */
+    white-space: nowrap;
+}
+
+/* ================= ÁREA DE JOGO ================= */
+.area-jogo {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    width: 100%; max-width: 900px; height: 100%; 
+    padding-top: 75px; padding-bottom: 140px; 
+    box-sizing: border-box; position: relative; gap: 15px;
+}
+
+.coluna-esquerda { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; min-height: 0; }
+.coluna-direita { width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0;}
+
+.painel-atendimento {
+    background: #ffffff; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+    border-left: 8px solid var(--cor-tema); width: 95%; max-width: 700px;
+    display: flex; flex-direction: column; 
+    height: auto; max-height: 52vh; 
+    overflow: hidden; z-index: 10;
+}
+
+.cartao-contexto {
+    padding: 15px 20px; text-align: left; background: var(--cor-tema-claro);
+    font-size: 18px; font-weight: bold; color: var(--cor-tema-escuro); border-bottom: 2px solid #b2dfdb;
+    flex-shrink: 0;
+}
+.cartao-contexto span { display: block; font-size: 13px; font-weight: normal; color: var(--cor-tema); text-transform: uppercase; margin-bottom: 5px; }
+
+.lista-dados {
+    flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px;
+    scroll-behavior: smooth;
+}
+
+.dado-linha {
+    background: #f5f5f5; padding: 12px 15px; border-radius: 10px; border: 2px solid #e0e0e0;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 16px; font-weight: 600; color: #424242; transition: all 0.3s ease;
+    animation: slideIn 0.3s ease-out; flex-shrink: 0;
+}
+@keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+
+.dado-linha.ativo {
+    background: #fff8e1; border-color: #ffb300; box-shadow: 0 4px 10px rgba(255, 179, 0, 0.3);
+    transform: scale(1.02); color: #212121;
+}
+
+.dado-linha.acerto-jogador { background: #e8f5e9; border-color: #81c784; color: #1b5e20; }
+.dado-linha.erro-jogador { background: #ffebee; border-color: #e57373; color: #b71c1c; }
+
+.nome-dado { flex: 1; padding-right: 10px; }
+.status-dado { font-size: 15px; font-weight: bold; padding: 0; text-align: right; line-height: 1.2;}
+.status-dado.sim-necessario { color: #2e7d32; }
+.status-dado.nao-necessario { color: #c62828; }
+
+.pulse-aguardando { animation: pulseAnim 1.5s infinite; color: #ff8f00; font-size: 13px;}
+@keyframes pulseAnim { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+/* ================= BOTÕES E ZONA DE ALERTA ================= */
+.zona-inferior {
+    width: 100%; display: flex; flex-direction: column; align-items: center;
+    position: relative; z-index: 50; margin-top: auto; 
+}
+
+.controles-decisao {
+    display: flex; gap: 20px; width: 90%; max-width: 600px; justify-content: center; position: relative; z-index: 60;
+}
+.btn-decisao {
+    flex: 1; padding: 15px 10px; border-radius: 15px; font-size: 20px; font-weight: bold;
+    color: white; cursor: pointer; border: none; text-transform: uppercase;
+    box-shadow: 0 8px 0px rgba(0,0,0,0.2); transition: all 0.1s;
+    display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px;
+}
+.btn-decisao:active { transform: translateY(8px); box-shadow: 0 0px 0px rgba(0,0,0,0.2); }
+
+.btn-nao { background: #d32f2f; box-shadow: 0 8px 0px #b71c1c; } 
+.btn-sim { background: #2e7d32; box-shadow: 0 8px 0px #1b5e20; }
+
+.icone-btn {
+    background: white; border-radius: 50%; width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.btn-nao .icone-btn { color: #d32f2f; }
+.btn-sim .icone-btn { color: #2e7d32; }
+
+.zona-alertas-local {
+    position: absolute; top: 100%; left: 0; width: 100%;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    pointer-events: none; z-index: 50; padding-top: 15px;
+}
+
+#toast-feedback, #alerta-combo {
+    position: relative; width: max-content; max-width: 90%; background: white; 
+    border-radius: 15px; padding: 10px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); text-align: center;
+    font-size: 15px; font-weight: 500; opacity: 0; pointer-events: none;
+    transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: #111;
+}
+
+/* #toast-feedback.show, #alerta-combo.show { transform: translateY(0); opacity: 1; } */
+#toast-feedback.show, #alerta-combo.show { 
+    transform: translateY(0); 
+    opacity: 1; 
+    pointer-events: auto; /* Libera o clique no alerta */
+    cursor: pointer;      /* Muda o cursor para a mãozinha */
+}
+/* #toast-feedback.show {
+    pointer-events: auto; Libera o clique no alerta
+    cursor: pointer;      Muda o cursor para a mãozinha
+} */
+
+#toast-feedback { border-left: 8px solid transparent; }
+/* #toast-feedback {
+    border-left: 8px solid transparent;
+    opacity: 0; 
+    transform: translateY(-20px); 
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    O pointer-events: none aqui impede que o toast invisível bloqueie cliques no jogo
+    pointer-events: none;
+} */
+#toast-feedback h3 { margin: 0 0 3px 0; font-size: 15px; text-transform: uppercase; }
+
+#toast-feedback.erro-omissao { border-left-color: #ff9800; }
+#toast-feedback.erro-omissao h3 { color: #ef6c00; }
+#toast-feedback.erro-excesso { border-left-color: #d32f2f; }
+#toast-feedback.erro-excesso h3 { color: #c62828; }
+#toast-feedback.erro-grave { border-left-color: #b71c1c; background: #ffebee;}
+#toast-feedback.erro-grave h3 { color: #b71c1c; }
+
+#alerta-combo { background: #d32f2f; color: white; border-radius: 30px; font-weight: bold; }
+/* #alerta-combo {
+    background: #d32f2f; color: white; border-radius: 30px; font-weight: bold;
+    pointer-events: auto; Libera o clique no alerta
+    cursor: pointer;      Muda o cursor para a mãozinha
+} */
+
+/* ================= RESPONSIVIDADE ================= */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .area-jogo { padding-top: 45px; padding-bottom: 10px; gap: 10px; flex-direction: row; align-items: stretch;}
+
+    .coluna-esquerda { flex: 1.4; height: 100%; justify-content: center; min-width: 0;}
+    .coluna-direita { flex: 1; height: 100%; justify-content: center; padding-top: 15px; position: relative;}
+
+    .painel-atendimento { height: auto; max-height: 85vh; border-left-width: 6px; width: 100%; margin: 0; }
+    
+    .cartao-contexto { padding: 10px 15px; font-size: 15px; }
+    .cartao-contexto span { font-size: 11px; margin-bottom: 2px;}
+    .lista-dados { padding: 10px; gap: 6px; }
+    .dado-linha { padding: 8px 12px; font-size: 14px; border-width: 2px; }
+
+    .zona-inferior { margin-top: 0; }
+    .controles-decisao { flex-direction: column; width: 90%; gap: 15px; justify-content: center; margin-top: 0;}
+    .btn-decisao { padding: 10px; font-size: 16px; height: 75px;}
+    .icone-btn { width: 24px; height: 24px; font-size: 14px; }
+
+    .zona-alertas-local { transform: translateX(0); padding-top: 15px; }
+    #toast-feedback, #alerta-combo { font-size: 13px; padding: 8px 12px; }
+    #toast-feedback h3 { font-size: 13px; margin-bottom: 2px; }
+}

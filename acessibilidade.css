@@ -1,0 +1,208 @@
+/* =========================================================
+ESTILOS GLOBAIS DE ACESSIBILIDADE
+========================================================= */
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* =========================================================
+GAVETA RETRÁTIL DE ACESSIBILIDADE (Física Determinística)
+========================================================= */
+#gaveta-acessibilidade {
+    position: fixed;
+    right: 0; left: auto;
+    
+    /* O JS injeta o TOP absoluto aqui. Removemos o translateY para evitar bugs de deslocamento */
+    transform: translateX(0); 
+    
+    width: 60px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px 0;
+    box-sizing: border-box; /* Fundamental para a matemática dos tamanhos não quebrar */
+    
+    /* Variáveis do arredondamento conectadas ao JS (0 a 15px dinâmico) */
+    border-top-left-radius: var(--br-top, 15px); 
+    border-bottom-left-radius: var(--br-bot, 15px); 
+    
+    box-shadow: -4px 0 15px rgba(0,0,0,0.15);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    z-index: 10000000;
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); /* Anima apenas o abrir/fechar */
+}
+#gaveta-acessibilidade.recolhida { transform: translateX(100%); }
+
+#btn-toggle-acessibilidade {
+    position: absolute;
+    left: -32px; right: auto;
+    
+    /* O JS controla a descida e subida livre dessa aba */
+    top: var(--aba-y, 50%); 
+    
+    width: 32px; height: 48px;
+    background-color: #005088; color: white;
+    border: none;
+    border-radius: 10px 0 0 10px;
+    cursor: grab; 
+    box-shadow: -3px 2px 8px rgba(0,0,0,0.2);
+    display: flex; align-items: center; justify-content: center;
+    transition: background-color 0.2s; /* Sem transition no TOP para drag instantâneo */
+}
+#btn-toggle-acessibilidade:active { cursor: grabbing; }
+
+/* Animação do Boneco (Lado Direito) */
+#btn-toggle-acessibilidade svg { transition: transform 0.8s ease; }
+#gaveta-acessibilidade.recolhida #btn-toggle-acessibilidade svg { transform: rotate(0deg); }
+#gaveta-acessibilidade:not(.recolhida) #btn-toggle-acessibilidade svg { transform: rotate(-360deg); }
+
+/* =========================================================
+GAVETA RETRÁTIL (Lado Esquerdo Dinâmico)
+========================================================= */
+#gaveta-acessibilidade.lado-esquerdo {
+    left: 0; right: auto;
+    border-top-right-radius: var(--br-top, 15px);
+    border-bottom-right-radius: var(--br-bot, 15px);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+}
+#gaveta-acessibilidade.lado-esquerdo.recolhida { transform: translateX(-100%); }
+
+#gaveta-acessibilidade.lado-esquerdo #btn-toggle-acessibilidade {
+    right: -32px; left: auto;
+    border-radius: 0 10px 10px 0;
+    box-shadow: 3px 2px 8px rgba(0,0,0,0.2);
+}
+
+#gaveta-acessibilidade.lado-esquerdo:not(.recolhida) #btn-toggle-acessibilidade svg { transform: rotate(-360deg); }
+
+/* =========================================================
+BOTÃO DE LIBRAS
+========================================================= */
+.btn-libras {
+    width: 44px; height: 44px;
+    background-color: #005088;
+    border: none; border-radius: 10px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: background-color 0.2s, transform 0.1s;
+}
+.btn-libras:hover { background-color: #00ACDE; }
+.btn-libras:active { transform: scale(0.95); }
+.btn-libras.ativo { background-color: #4caf50 !important; }
+
+/* ... (Mantenha o #acessibilidade-audio-widget abaixo intacto!) */
+/* ... (Mantenha as regras do widget de áudio abaixo intactas) */
+/* ... (Mantenha o restante de #acessibilidade-audio-widget igual!) */
+
+
+/* =========================================================
+WIDGET DO LEITOR DE ÁUDIO
+========================================================= */
+#acessibilidade-audio-widget {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Roboto', sans-serif;
+}
+
+.audio-widget-botoes {
+    background-color: #005088;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    width: 44px;
+}
+
+.btn-audio-principal {
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-audio-principal:hover {
+    background-color: #00ACDE;
+}
+
+.btn-audio-principal.ativo {
+    background-color: #4caf50 !important;
+}
+
+.btn-audio-config {
+    width: 44px;
+    height: 24px;
+    background: #004357;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.btn-audio-config:hover {
+    background-color: #00ACDE;
+}
+
+/* =========================================================
+PAINEL DE CONFIGURAÇÕES DE ÁUDIO
+========================================================= */
+.painel-audio-oculto {
+    display: none;
+    position: absolute;
+    right: 70px; /* Joga o painel de engrenagem para fora da gaveta */
+    background: #F1FFF8;
+    border: 2px solid #005088;
+    border-radius: 12px;
+    padding: 15px;
+    width: 240px;
+    box-shadow: -4px 4px 15px rgba(0,0,0,0.15);
+    cursor: default;
+}
+
+.painel-audio-oculto.aberto {
+    display: block;
+    animation: fadeInSlide 0.2s ease-out;
+}
+
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Estilo do Slider de Velocidade */
+#audio-velocidade {
+    width: 100%;
+    margin: 8px 0 15px 0;
+    accent-color: #00ACDE; /* Pinta a bolinha do slider com o azul da identidade visual */
+}
+
+/* =========================================================
+AVISO DE NAVEGADOR (FIREFOX)
+========================================================= */
+.modal-aviso-navegador {
+    display: none;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.85); z-index: 2147483647; /* Máximo */
+    flex-direction: column; justify-content: center; align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal-aviso-navegador.ativa {
+    display: flex;
+}

@@ -1,0 +1,130 @@
+/* ================= VARIÁVEIS DE TEMA ESPECÍFICAS ================= */
+:root {
+    --cor-tema: #d32f2f;
+    --cor-tema-escuro: #b71c1c;
+    --cor-tema-claro: #ffebee;
+}
+
+body::before {
+    content: "🚨🔒"; position: absolute; font-size: 250px; opacity: 0.05; z-index: -1;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); letter-spacing: -20px;
+
+    /* NOVO: Impede quebra de linha em telas pequenas */
+    white-space: nowrap;
+}
+
+/* ================= ÁREA DE JOGO (LIVRE) ================= */
+.area-jogo {
+    position: relative; width: 100%; max-width: 100%; height: 100%; 
+    padding-top: 70px; padding-bottom: 20px; 
+    box-sizing: border-box; overflow: hidden; /* Permite que os cards flutuantes ultrapassem os limites */
+}
+
+/* PAUSADO - Remove interações visuais */
+.area-jogo.pausado .card-flutuante, 
+.area-jogo.pausado .painel-fixo-centro,
+.area-jogo.pausado .card-slot {
+    pointer-events: none !important;
+    cursor: default !important;
+}
+
+/* ================= PAINEL CENTRAL (ALVO) ================= */
+.painel-fixo-centro {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); /* Centro Perfeito */
+    background: #ffffff; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); 
+    border: 4px solid var(--cor-tema); 
+    width: 95%; max-width: 580px; /* Mais largo */
+    min-height: 380px;            /* Mais espaço vertical */
+    display: flex; flex-direction: column; box-sizing: border-box;
+    z-index: 10; /* Fica por trás dos cards de fora */
+    cursor: grab;
+}
+.painel-fixo-centro:active { cursor: grabbing; }
+
+.alerta-header {
+    background: var(--cor-tema); color: white; padding: 15px; border-radius: 10px 10px 0 0;
+    font-size: 18px; font-weight: 900; text-align: center; letter-spacing: 1px;
+    animation: piscarAlerta 2s infinite; flex-shrink: 0; pointer-events: none;
+}
+@keyframes piscarAlerta { 0%, 100% { background: var(--cor-tema); } 50% { background: #ff5252; } }
+
+.titulo-plano {
+    background: var(--cor-tema-claro); color: var(--cor-tema-escuro);
+    text-align: center; font-weight: bold; padding: 10px; font-size: 14px;
+    border-bottom: 2px dashed #ffcdd2; pointer-events: none;
+}
+
+.container-slots {
+    padding: 15px; display: flex; flex-direction: row; flex-wrap: wrap; /* Cards ficam lado a lado */
+    gap: 10px; flex-grow: 1; align-items: flex-start; justify-content: center;
+    overflow-y: auto;
+}
+.texto-vazio { color: #999; font-style: italic; font-size: 14px; margin-top: 40px; pointer-events: none; }
+
+/* ================= CONTAINER SCATTER E CARDS ================= */
+.container-scatter {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; 
+    z-index: 20; /* Fica acima do painel central */
+}
+/* Quando um card é arrastado, a camada inteira sobe acima dos alertas (z-index 100) */
+.container-scatter.drag-active { z-index: 200; }
+
+.card-flutuante {
+    position: absolute; width: 180px;
+    background: white; border: 2px solid #ccc; border-radius: 10px; padding: 15px;
+    font-size: 14px; font-weight: bold; color: #333; text-align: center;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2); transition: transform 0.1s;
+    pointer-events: auto; touch-action: none; cursor: grab;
+    display: flex; align-items: center; justify-content: center;
+}
+.card-flutuante:active, .card-flutuante.arrastando { 
+    cursor: grabbing; transform: scale(1.05); 
+    z-index: 999999 !important; /* Prioridade Máxima sobre Tudo */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
+}
+
+/* ================= CARDS DENTRO DO PLANO ================= */
+.card-slot {
+    width: calc(50% - 10px); /* Ocupa metade do painel para caberem vários */
+    padding: 12px 10px; border-radius: 10px; font-size: 13px; font-weight: bold;
+    text-align: center; cursor: pointer; position: relative;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1); animation: popIn 0.2s ease-out;
+}
+@keyframes popIn { 0% { transform: scale(0.8); opacity: 0;} 100% { transform: scale(1); opacity: 1;} }
+
+.card-slot.correto { background: #e8f5e9; border: 2px solid #4caf50; color: #1b5e20; }
+.card-slot.correto::after { content: "✅"; position: absolute; right: 5px; top: -10px; font-size: 16px; }
+
+.card-slot.errado { background: #ffebee; border: 2px solid #f44336; color: #b71c1c; animation: shakeError 0.4s ease-in-out; }
+.card-slot.errado::after { content: "❌ (Remover)"; position: absolute; right: 5px; top: -12px; font-size: 11px; color: #d32f2f; background: white; padding: 2px 5px; border-radius: 5px; border: 1px solid red; box-shadow: 0 2px 4px rgba(0,0,0,0.2);}
+@keyframes shakeError { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+
+/* ================= ZONA ALERTAS (Z-INDEX 100) ================= */
+.zona-alertas-local {
+    position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 400px; display: flex; flex-direction: column; align-items: center; gap: 10px;
+    pointer-events: none; z-index: 100;
+}
+#toast-feedback {
+    background: white; border-radius: 15px; padding: 12px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); text-align: center;
+    font-size: 15px; font-weight: 500; opacity: 0; pointer-events: none; color: #111;
+    transform: translateY(20px); transition: all 0.3s ease; border-left: 8px solid transparent; width: 100%;
+}
+#toast-feedback.show { transform: translateY(0); opacity: 1; pointer-events: auto !important; cursor: pointer; }
+#toast-feedback h3 { margin: 0 0 3px 0; font-size: 15px; text-transform: uppercase; }
+#toast-feedback.sucesso { border-left-color: #4caf50; }
+#toast-feedback.sucesso h3 { color: #2e7d32; }
+#toast-feedback.erro { border-left-color: #f44336; }
+#toast-feedback.erro h3 { color: #c62828; }
+
+/* ================= RESPONSIVIDADE ================= */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .painel-fixo-centro { min-height: 200px; max-width: 450px;}
+    .alerta-header { font-size: 14px; padding: 8px;}
+    .titulo-plano { font-size: 12px; padding: 5px;}
+    .container-slots { padding: 20px 5px 5px 5px; gap: 5px; } /* <--- 20px NO TOPO E 5px NOS OUTROS LADOS */
+    .card-flutuante { width: 130px; font-size: 11px; padding: 8px;}
+    .card-slot { font-size: 11px; padding: 8px;}
+}

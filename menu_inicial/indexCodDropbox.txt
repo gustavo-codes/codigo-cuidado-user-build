@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, touch-action: none">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, touch-action: none, viewport-fit=cover"> -->
+    <title>Código Cuidado - Menu Principal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../acessibilidade.css">
+
+    <style>
+        /* ================= VARIÁVEIS DO GUIA IDV ================= */
+        :root {
+            --idv-dark-blue: #004357;
+            --idv-light-blue: #00ACDE;
+            --idv-pale-blue: #B9EFFF;
+            --idv-mint: #E0FFF0;
+            --idv-white: #F1FFF8;
+            --fonte-texto: 'Roboto', sans-serif;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100dvh;
+            font-family: var(--fonte-texto);
+            /* AJUSTE AQUI: Fundo alterado para branco para evitar piscada escura no início */
+            background-color: #FFFFFF; 
+            /* overflow: hidden; */
+            overflow-x: hidden; overflow-y: auto;
+            color: var(--idv-dark-blue);
+            display: flex; align-items: center; justify-content: center;
+            -webkit-user-select: none; user-select: none;
+        }
+
+        /* ================= IMAGEM DE FUNDO ================= */
+        .bg-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+            /* background: radial-gradient(circle at center, #007a9e 0%, var(--idv-dark-blue) 100%); */
+            background: #FFFFFF; /* Fundo branco sólido para evitar piscada escura no início */
+            background-color: #FFFFFF; /* Garantia extra de fundo branco */
+            opacity: 0.9;
+        }
+        
+        .bg-imagem-real {
+            /* position: absolute; */
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+
+            /* Cobre toda a área mantendo a proporção, pode cortar um pouco */
+            /* Cover garante que a imagem preencha 100% da tela sempre, sem bordas vazias */
+            object-fit: cover;
+            /* Opcional: Centraliza a parte mais importante da imagem */
+            object-position: center;
+
+            /* Cobre toda a área sem distorcer */
+            /* object-fit: 100% 100%; */
+            /* filter: blur(2px) brightness(0.8); */
+
+            transform: scale(1.05);
+            opacity: 1;
+
+            /* ADICIONE ESTA LINHA: Altere o '0px' para ajustar a translação vertical */
+            /* object-position: 20px 0px;
+            object-position: 0px 0px; */
+        }
+
+        .character-layer {
+            position: absolute; bottom: 0; right: 5%; width: 45vh; height: 85vh; z-index: 1;
+            background-repeat: no-repeat; background-position: bottom center; background-size: contain;
+            filter: drop-shadow(-10px 10px 15px rgba(0,0,0,0.3)); transition: opacity 0.5s;
+        }
+
+        /* ================= GERENCIADOR DE TELAS ================= */
+        /* .view {
+            position: absolute; width: 100%;
+            height: 100%;
+            min-height: 100%; height: auto; padding: 40px 0; box-sizing: border-box;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: all 0.4s ease-in-out;
+            transform: scale(0.95); z-index: 10;
+        } */
+        .view {
+            position: absolute; width: 100%;
+            height: 100%;
+            display: flex; flex-direction: column; 
+            
+            /* RESTAURADO: Mantém tudo centralizado horizontalmente */
+            align-items: center; 
+            /* justify-content: center; -> CONTINUA REMOVIDO para não cortar o topo */
+            
+            opacity: 0; pointer-events: none; transition: all 0.4s ease-in-out;
+            transform: scale(0.95); z-index: 10;
+            overflow-y: auto; /* Permite a rolagem */
+        }
+
+        /* === O TRUQUE MÁGICO DO SCROLL SEGURO === */
+        /* Esses elementos fantasmas empurram o conteúdo para o meio, 
+           mas cedem espaço e liberam o topo caso a tela seja pequena */
+        .view::before,
+        .view::after {
+            content: '';
+            margin: auto;
+        }
+
+        .view.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+
+        .logo-img { width: 450px; height: auto; margin-bottom: 30px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4)); }
+
+        /* ================= CARTÕES DE CONTEÚDO ================= */
+        /* .menu-card {
+            background: var(--idv-mint);
+            padding: 50px 60px 40px 60px; Padding superior aumentado para evitar interseções
+            border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 4px solid var(--idv-light-blue);
+            display: flex; flex-direction: column; align-items: center;
+            max-width: 800px; width: 80%; position: relative;
+        } */
+        /* .menu-card {
+            background: var(--idv-mint);
+            padding: 50px 60px 40px 60px; 
+            border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 4px solid var(--idv-light-blue);
+            display: flex; flex-direction: column; align-items: center;
+            max-width: 800px; width: 80%; position: relative;
+            
+            Garante que o cartão nunca grude nas bordas ao rolar a tela
+            margin: 25px 0; 
+            
+            Impede que o Flexbox esmague o cartão quando a tela for pequena
+            flex-shrink: 0; 
+        } */
+        .menu-card {
+            background: var(--idv-mint);
+            padding: 50px 60px 40px 60px; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 4px solid var(--idv-light-blue);
+            display: flex; flex-direction: column; align-items: center;
+            
+            /* Ajustes de Largura e Altura */
+            max-width: 800px; 
+            width: 80%; 
+            position: relative;
+            
+            /* === AS 3 REGRAS QUE RESOLVEM TUDO === */
+            box-sizing: border-box; /* Impede que o painel vaze nas laterais */
+            max-height: 95dvh;      /* O painel nunca encosta no teto/chão da tela */
+            overflow-y: auto;       /* Se tiver muito texto, a rolagem fica DENTRO do painel */
+            
+            /* "Molas" do Flexbox */
+            margin: auto; 
+            flex-shrink: 0; 
+        }
+
+        .titulo-view {
+            font-size: 28px; font-weight: 900; color: var(--idv-dark-blue); 
+            margin-bottom: 25px; text-transform: uppercase;
+            display: flex; align-items: center; gap: 15px; width: 100%; justify-content: center;
+        }
+
+        /* ================= BOTÕES (MELHORIA DE REAÇÃO E SINDICALIZAÇÃO DE CLIQUE) ================= */
+        .btn {
+            border-radius: 30px; font-weight: 900; cursor: pointer; text-transform: uppercase; 
+            transition: transform 0.05s linear, box-shadow 0.05s linear, background 0.2s ease; 
+            text-align: center; border: 3px solid var(--idv-dark-blue); margin-bottom: 15px;
+        }
+
+        /* Botão Primário (Começar - Redimensionado e Destacado) */
+        .btn-primario {
+            background: var(--idv-white); color: var(--idv-dark-blue);
+            box-shadow: 0 5px 0 var(--idv-dark-blue); font-size: 24px;
+            padding: 18px 50px; width: 340px; 
+        }
+        .btn-primario:hover { background: var(--idv-pale-blue); }
+        .btn-primario:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+
+        /* Botão Secundário (Ajuste de clique igual referência) */
+        .btn-secundario {
+            background: var(--idv-light-blue); color: var(--idv-white);
+            box-shadow: 0 5px 0 var(--idv-dark-blue); border-color: var(--idv-dark-blue);
+            font-size: 20px; padding: 15px 40px; width: 300px;
+        }
+        .btn-secundario:hover { background: #0093be; }
+        .btn-secundario:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+
+        /* Botão Flutuante */
+        .btn-flutuante {
+            margin-top: 20px; font-size: 16px; width: auto; padding: 10px 30px;
+            box-shadow: 0 5px 0 var(--idv-dark-blue);
+        }
+        .btn-flutuante:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+
+        /* Botões de Ícones Modificados para Imagens da Pasta UI */
+        .btn-icone {
+            background-color: transparent; border: none; width: 55px; height: 55px;
+            cursor: pointer; transition: transform 0.05s linear;
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+        }
+        .btn-icone:hover { transform: scale(1.08); }
+        .btn-icone:active { transform: scale(0.92); }
+        .btn-voltar { position: absolute; left: 25px; top: 25px; background-image: url('ui/a.png'); }
+        /* .btn-voltar { 
+            position: absolute; 
+            max() garante que a margem nunca será menor que 25px, mesmo em ecrãs quadrados
+            left: max(25px, env(safe-area-inset-left)); 
+            top: max(25px, env(safe-area-inset-top)); 
+            background-image: url('ui/a.png'); 
+        } */
+
+        /* ======== ADICIONE ESTA NOVA REGRA AQUI ======== */
+        .btn-instalar { 
+            position: absolute; 
+            left: 0px; 
+            bottom: 10px; 
+            font-size: 38px; /* Tamanho se usar o emoji 📱 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Se for usar a imagem que está no print, apague o font-size acima e use: */
+            /* background-image: url('caminho/para/icone-celular.png'); */
+        }
+
+        /* Container do Botão PWA */
+        .instalar-container {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            z-index: 1000;
+        }
+
+        /* Redefinindo o posicionamento do botão para ficar relativo ao container */
+        .btn-instalar {
+            position: relative;
+            left: 0;
+            bottom: 0;
+            z-index: 2;
+        }
+
+        /* Esconde o botão em computadores (dispositivos com mouse preciso) */
+        /* @media (hover: hover) and (pointer: fine) {
+            .btn-instalar {
+                display: none !important;
+            }
+        } */
+        /* Esconde o botão em telas de computadores (maiores que 1024px) */
+        @media screen and (min-width: 1025px) {
+            .btn-instalar {
+                display: none !important;
+            }
+        }
+
+        /* O Tooltip de Instruções */
+        .instalar-tooltip {
+            position: absolute;
+            /* bottom: -70px;           Fica alinhado com a base do botão */
+            bottom: 20px;           /* Fica alinhado com a base do botão */
+            left: 40px;          /* Nasce logo à direita do ícone do celular */
+            width: 360px;        /* Largura fixa para não quebrar layout */
+            background: #F1FFF8;
+            border: 3px solid #004357;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            
+            /* Configurações de exibição (invisível até o hover) */
+            opacity: 0;
+            visibility: hidden;
+            /* transform: translateY(10px); */
+            /* transform: translateX(-10px); */
+            transition: all 0.3s ease;
+            /* z-index: 1; */
+            z-index: 100;
+            text-align: left;
+            pointer-events: none; /* Impede clique quando invisível */
+        }
+
+        /* Mostra o tooltip quando passar o mouse no container */
+        .instalar-container:hover .instalar-tooltip,
+        .btn-instalar:focus + .instalar-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Estilos de texto do tooltip */
+        .instalar-tooltip h4 {
+            margin: 0 0 10px 0;
+            color: #004357;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .instalar-tooltip p {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.3;
+        }
+
+        .instrucao-so {
+            background: #E0FFF0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.4;
+            border: 1px solid #00ACDE;
+        }
+
+        .instrucao-so i {
+            color: #00ACDE;
+        }
+
+        /* Botão extra para abrir aba manualmente */
+        .btn-abrir-cheia {
+            width: 100%;
+            background: #004357;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-abrir-cheia:hover {
+            background: #00ACDE;
+        }
+
+        /* ================= TELA: SOBRE O PROJETO ================= */
+        /* .sobre-container { display: flex; gap: 20px; text-align: left; }
+        .sobre-box {
+            background: var(--idv-white); border: 2px solid var(--idv-light-blue);
+            padding: 20px; border-radius: 15px; flex: 1;
+            font-size: 15px; font-weight: 700; color: var(--idv-dark-blue); line-height: 1.5;
+            text-align: justify; TEXTO JUSTIFICADO APLICADO AQUI
+        }
+        .sobre-box h3 { margin-top: 0; text-align: center; color: var(--idv-dark-blue); font-size: 22px; font-style: italic;} */
+        .sobre-container {
+            display: flex; flex-direction: column; gap: 15px; 
+            width: 100%; max-height: 40vh; /* Permite rolagem se a tela for pequena */
+            overflow-y: auto; padding-right: 10px;
+        }
+        
+        /* Estilizando a barra de rolagem para ficar azul e elegante */
+        .sobre-container::-webkit-scrollbar { width: 8px; }
+        .sobre-container::-webkit-scrollbar-track { background: var(--idv-pale-blue); border-radius: 10px; }
+        .sobre-container::-webkit-scrollbar-thumb { background: var(--idv-light-blue); border-radius: 10px; }
+        
+        .sobre-box {
+            background: var(--idv-white); border: 2px solid var(--idv-light-blue);
+            padding: 15px 20px; border-radius: 15px; text-align: justify;
+            color: var(--idv-dark-blue);
+        }
+        .sobre-box h3 { margin: 0 0 8px 0; font-size: 18px; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+        .sobre-box p { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.4; color: #444; }
+
+        /* ================= ESTILOS DO PAINEL DE TUTORIAIS ================= */
+        .tutoriais-container {
+            display: flex; flex-direction: column; gap: 15px; 
+            width: 100%; max-height: 40vh; /* Permite rolagem se a tela for pequena */
+            overflow-y: auto; padding-right: 10px;
+        }
+        
+        /* Estilizando a barra de rolagem para ficar azul e elegante */
+        .tutoriais-container::-webkit-scrollbar { width: 8px; }
+        .tutoriais-container::-webkit-scrollbar-track { background: var(--idv-pale-blue); border-radius: 10px; }
+        .tutoriais-container::-webkit-scrollbar-thumb { background: var(--idv-light-blue); border-radius: 10px; }
+        
+        .tutorial-item {
+            background: var(--idv-white); border: 2px solid var(--idv-light-blue);
+            padding: 15px 20px; border-radius: 15px; text-align: justify;
+            color: var(--idv-dark-blue);
+        }
+        .tutorial-item h3 { margin: 0 0 8px 0; font-size: 18px; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+        .tutorial-item p { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.4; color: #444; }
+
+        /* ================= TELA: EQUIPE PADRONIZADA (PAINEL FIXO) ================= */
+        .menu-equipe-fixo {
+            /* width: 680px; height: 530px; */
+            width: 100%; max-width: 680px; height: auto; padding-bottom: 25px;
+            display: flex; flex-direction: column; justify-content: space-between; position: relative;
+        }
+        .equipe-conteudo-wrapper { flex-grow: 1; display: flex; align-items: center; justify-content: center; width: 100%; margin: 15px 0; }
+        
+        .equipe-pagina { display: none; width: 100%; }
+        .equipe-pagina.ativa { display: block; }
+
+        .equipe-grid { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; align-items: center; }
+        
+        /* Quadro Padrão Monitores e Profissionais */
+        .membro-card {
+            background: var(--idv-white); border: 2px solid var(--idv-light-blue);
+            border-radius: 10px; width: 120px; height: 150px;
+            display: flex; flex-direction: column; box-shadow: 0 5px 10px rgba(0,0,0,0.1); overflow: hidden;
+            /* ADICIONADO: Cursor e transição */
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        /* ADICIONADO: O Efeito Hover */
+        .membro-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,172,222,0.3);
+            border-color: var(--idv-dark-blue);
+            cursor: zoom-in;
+        }
+
+        /* NOVO: Quadro Grande para os Orientadores */
+        .membro-card.grande {
+            width: 150px; height: 230px;
+        }
+
+        .membro-foto { 
+            flex: 1; background-color: #d0e8f2; 
+            background-repeat: no-repeat; border-bottom: 2px solid var(--idv-light-blue);
+        }
+        .membro-nome { 
+            padding: 6px 4px; font-size: 11px; font-weight: bold; text-align: center; line-height: 1.2;
+            display: flex; flex-direction: column; justify-content: center; min-height: 45px;
+        }
+        .membro-subtitulo { font-size: 9px; font-weight: normal; color: #555; margin-top: 2px;}
+
+        .divisor-equipe { 
+            width: 100%; text-align: center; font-weight: 900; color: var(--idv-light-blue); 
+            margin-top: 15px;    /* Espaço ACIMA do texto */
+            margin-bottom: 15px; /* Espaço ABAIXO do texto (evita que a foto bata nele ao pular) */
+            text-transform: uppercase; font-size: 14px; 
+        }
+
+        /* Controles Locais de Slides da Equipe */
+        /* .controles-locais-equipe {
+            position: absolute;
+            top: 50%; left: -10px; right: -10px; transform: translateY(-50%);
+            display: flex; justify-content: space-between;
+            width: calc(100% + 20px); pointer-events: none; z-index: 100;
+        } */
+        .controles-locais-equipe {
+            position: absolute; 
+            top: 50%; transform: translateY(-50%);
+            display: flex; justify-content: space-between; 
+            pointer-events: none; z-index: 100;
+            
+            /* Trazemos as setas para DENTRO do painel (valores positivos) */
+            /* A seta direita recua bastante para desviar do VLibras/Áudio */
+            right: 75px;
+            
+            /* A seta esquerda poderia ganhar apenas um pequeno respiro da borda,
+               mas para manter a simetria com a seta direita, ela também recua o mesmo valor */
+            left: 75px;
+
+            width: auto; /* Removemos o calc(100% + 20px) antigo para ele respeitar o left/right */
+        }
+        .btn-seta-local { pointer-events: auto; }
+
+        /* ================= MODAL DE ZOOM DA FOTO ================= */
+        .modal-foto-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.85); z-index: 15000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .modal-foto-overlay.ativa { opacity: 1; pointer-events: auto; }
+        
+        .modal-foto-img {
+            max-width: 90%; max-height: 70vh; border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); border: 4px solid var(--idv-white);
+            object-fit: contain;
+        }
+        
+        .btn-fechar-zoom {
+            margin-top: 20px; background: var(--idv-white); color: var(--idv-dark-blue);
+            border: 3px solid var(--idv-dark-blue); border-radius: 30px;
+            padding: 10px 40px; font-weight: 900; font-size: 16px; cursor: pointer;
+            text-transform: uppercase; box-shadow: 0 4px 0 var(--idv-dark-blue); transition: all 0.1s;
+        }
+        .btn-fechar-zoom:active { transform: translateY(4px); box-shadow: none; }
+
+        /* ================= TELA: SELEÇÃO DE PERFIL ================= */
+        .perfil-container { display: flex; gap: 40px; margin-top: 30px; margin-bottom: 20px; }
+        .card-perfil {
+            background: var(--idv-white); border: 4px solid var(--idv-pale-blue);
+            border-radius: 20px; width: 220px; height: 280px;
+            display: flex; flex-direction: column; align-items: center;
+            cursor: pointer; transition: all 0.3s ease; overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .card-perfil:hover {
+            border-color: var(--idv-light-blue); transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,172,222,0.4);
+        }
+        .foto-perfil { width: 100%; height: 180px; background-repeat: no-repeat; border-bottom: 4px solid var(--idv-pale-blue); }
+        .nome-perfil { font-size: 24px; font-weight: 900; color: var(--idv-dark-blue); margin-top: 20px; }
+
+        /* ================= ESTILIZAÇÃO DO TÍTULO "JOGAR COMO" ================= */
+        #titulo-jogar-como {
+            display: flex;
+            flex-direction: column; /* Força uma linha abaixo da outra */
+            align-items: center;    /* Centraliza horizontalmente */
+            text-align: center;
+            margin-top: 15px;       /* Dá um respiro em relação aos seletores de cima */
+            margin-bottom: 25px;    /* Espaçamento elegante antes dos cards de perfil */
+            text-transform: uppercase;
+            line-height: 1.1;
+            width: 100%;
+        }
+
+        /* Etiqueta superior menor */
+        .jogar-label {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--idv-light-blue);
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        /* Título principal em destaque */
+        .jogar-titulo {
+            font-size: 28px;
+            font-weight: 900; /* Peso Black */
+            color: var(--idv-dark-blue);
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+        }
+
+        /* ESTILOS DOS SELETORES */
+        .opcoes-dificuldade { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 10px; margin-bottom: 15px; background: #E0FFF0; padding: 15px; border-radius: 15px; width: 100%; max-width: 300px; box-sizing: border-box; border: 2px solid var(--idv-light-blue); }
+        .switch-container { display: flex; align-items: center; gap: 15px; cursor: pointer; width: 100%; justify-content: space-between; }
+        .switch-textos { display: flex; flex-direction: column; text-align: left; color: var(--idv-dark-blue);}
+        .switch-textos span { font-weight: bold; font-size: 16px; }
+        .switch-textos small { font-size: 12px; color: #666; }
+        .switch-container input { display: none; }
+        .slider { position: relative; width: 50px; height: 26px; background-color: #ccc; border-radius: 30px; transition: .3s; flex-shrink: 0;}
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .3s; }
+        input:checked + .slider { background-color: #4caf50; }
+        input:checked + .slider:before { transform: translateX(24px); }
+        
+        /* ================= BARRA DE CARREGAMENTO ================= */
+        .bar-bg { width: 300px; height: 15px; background: var(--idv-dark-blue); border-radius: 10px; overflow: hidden; margin-top: 30px; border: 3px solid var(--idv-white); }
+        .bar-fill { height: 100%; width: 0%; background: var(--idv-light-blue); animation: fill 1.5s ease-out forwards; }
+        @keyframes fill { to { width: 100%; } }
+
+        /* ================= RESPONSIVIDADE PAINEL COORDENADO ================= */
+        /* @media screen and (max-height: 600px) and (orientation: landscape) {
+            .logo-img { width: 220px; margin-bottom: 10px;}
+            .menu-card {
+                padding: 35px 20px 20px 20px;
+                border-radius: 15px;
+                width: 95%; max-width: 650px;}
+            .menu-card { 
+                padding: 15px 20px; 
+                border-radius: 15px; 
+                width: 95%; max-width: 650px;
+                
+                box-sizing: border-box; Repita aqui por segurança!
+            }
+            .menu-horizontal { flex-direction: row; gap: 30px; justify-content: center; align-items: center;}
+            .btn { margin-bottom: 8px; border-width: 2px; }
+            .btn-primario { font-size: 20px; width: 240px; padding: 10px 20px; box-shadow: 0 4px 0 var(--idv-dark-blue); }
+            .btn-primario:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+            .btn-secundario { font-size: 15px; width: 200px; padding: 10px 20px; box-shadow: 0 4px 0 var(--idv-dark-blue);}
+            .btn-secundario:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+            .btn-flutuante { margin-top: 10px; font-size: 14px; padding: 6px 20px; box-shadow: 0 4px 0 var(--idv-dark-blue); }
+            .titulo-view { font-size: 20px; margin-bottom: 10px; }
+            .btn-icone { width: 45px; height: 45px; }
+            .btn-voltar { top: 15px; left: 15px; }
+            
+            .sobre-box { padding: 12px; font-size: 12px; }
+            .sobre-box h3 { font-size: 16px; margin-bottom: 5px; }
+            
+            .menu-equipe-fixo {
+                height: 400px;
+                height: auto;
+            }
+            .membro-card { width: 85px; height: 110px; }
+            .membro-card.grande { width: 130px; height: 200px; }
+            .membro-nome { font-size: 9px; min-height: 35px;}
+            .membro-subtitulo { font-size: 8px; }
+            .divisor-equipe {
+                margin-top: 8px;
+                margin-bottom: 10px; Aumentado para dar o respiro do hover em ecrãs menores
+                font-size: 11px;
+            }
+            .equipe-grid { gap: 10px; }
+
+            .perfil-container { gap: 20px; margin-bottom: 5px; }
+            .card-perfil { width: 140px; height: 180px; border-width: 2px;}
+            .foto-perfil { height: 120px; border-bottom-width: 2px;}
+            .nome-perfil { font-size: 16px; margin-top: 10px;}
+            .character-layer { width: 30vh; right: 2%; } 
+
+            Ajustes Gerais para caber na tela
+            .logo-img { width: 180px; margin-bottom: 5px;}
+            .menu-card { 
+                padding: 15px 20px; 
+                border-radius: 15px; 
+                width: 95%; max-width: 650px;
+                max-height: 95vh; O Segredo: Nunca será maior que a tela!
+                box-sizing: border-box;
+            }
+            .titulo-view { font-size: 18px; margin-bottom: 5px; }
+            .btn { margin-bottom: 5px; border-width: 2px; }
+            .btn-primario { font-size: 16px; width: 200px; padding: 8px 15px; }
+            .btn-secundario { font-size: 13px; width: 180px; padding: 8px 15px; }
+            
+            Ajustes Específicos do Painel da Equipe
+            .menu-equipe-fixo { 
+                height: 95vh; Cresce com a tela...
+                max-height: 380px; ...mas não passa desse limite
+                padding-bottom: 10px; 
+            }
+            .equipe-conteudo-wrapper { margin: 5px 0; }
+            .membro-card { width: 75px; height: 110px; }
+            .membro-card.grande { width: 110px; height: 170px; }
+            .divisor-equipe { margin-top: 5px; margin-bottom: 5px; font-size: 10px; }
+            
+            Ajustes da Tela de Perfil
+            .perfil-container { gap: 15px; margin-bottom: 0px; margin-top: 10px; }
+            .card-perfil { width: 120px; height: 160px; }
+            .foto-perfil { height: 110px; }
+            .nome-perfil { font-size: 14px; margin-top: 5px; }
+            #titulo-jogar-como { margin-top: 5px; margin-bottom: 5px; }
+            .opcoes-dificuldade { padding: 10px; margin-top: 5px; margin-bottom: 5px; }
+        } */
+
+        /* ================= RESPONSIVIDADE PAINEL COORDENADO ================= */
+        @media screen and (max-height: 600px) and (orientation: landscape) {
+            /* Ajustes Gerais para caber na tela */
+            .logo-img { width: 180px; margin-bottom: 5px; }
+            
+            .menu-card { 
+                padding: 15px 20px; 
+                border-radius: 15px; 
+                width: 95%; max-width: 650px;
+                max-height: 95vh; 
+                box-sizing: border-box;
+            }
+            .menu-horizontal { flex-direction: row; gap: 30px; justify-content: center; align-items: center; }
+            
+            .titulo-view { font-size: 18px; margin-bottom: 5px; }
+            
+            /* Botões */
+            .btn { margin-bottom: 5px; border-width: 2px; }
+            .btn-primario { font-size: 16px; width: 200px; padding: 8px 15px; box-shadow: 0 4px 0 var(--idv-dark-blue); }
+            .btn-primario:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+            .btn-secundario { font-size: 13px; width: 180px; padding: 8px 15px; box-shadow: 0 4px 0 var(--idv-dark-blue); }
+            .btn-secundario:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+            .btn-flutuante { margin-top: 10px; font-size: 14px; padding: 6px 20px; box-shadow: 0 4px 0 var(--idv-dark-blue); }
+            
+            .btn-icone { width: 45px; height: 45px; }
+            .btn-voltar { top: 15px; left: 15px; }
+            
+            /* Tela Sobre/Tutoriais */
+            .sobre-box { padding: 12px; font-size: 12px; }
+            .sobre-box h3 { font-size: 16px; margin-bottom: 5px; }
+            
+            /* Ajustes Específicos do Painel da Equipe */
+            .menu-equipe-fixo { 
+                height: 95vh; 
+                max-height: 380px; 
+                padding-bottom: 10px; 
+            }
+            .equipe-conteudo-wrapper { margin: 5px 0; }
+            .equipe-grid { gap: 10px; }
+            .membro-card { width: 75px; height: 110px; }
+            .membro-card.grande { width: 110px; height: 170px; }
+            .membro-nome { font-size: 9px; min-height: 35px; }
+            .membro-subtitulo { font-size: 8px; }
+            .divisor-equipe { margin-top: 5px; margin-bottom: 5px; font-size: 10px; }
+            
+            /* Ajustes da Tela de Perfil */
+            .perfil-container { gap: 15px; margin-bottom: 0px; margin-top: 10px; }
+            .card-perfil { width: 120px; height: 160px; border-width: 2px; }
+            .foto-perfil { height: 110px; border-bottom-width: 2px; }
+            .nome-perfil { font-size: 14px; margin-top: 5px; }
+            #titulo-jogar-como { margin-top: 5px; margin-bottom: 5px; }
+            .opcoes-dificuldade { padding: 10px; margin-top: 5px; margin-bottom: 5px; }
+            
+            /* Personagem 3D (Médico no fundo) */
+            .character-layer { width: 30vh; right: 2%; }
+
+            /* --- CORREÇÃO 1: Tooltip do App (Compactado para caber no painel) --- */
+            .instalar-tooltip {
+                bottom: -5px; /* Alinha o balão mais para baixo */
+                left: 45px;
+                width: 260px;
+                padding: 12px;
+            }
+            .instalar-tooltip h4 { font-size: 13px; margin-bottom: 6px; }
+            .instalar-tooltip p { font-size: 11px; margin-bottom: 6px; }
+            .instrucao-so { font-size: 10px; padding: 6px; margin-bottom: 6px; }
+            .btn-abrir-cheia { padding: 6px; font-size: 11px; }
+
+            /* --- CORREÇÃO 2: Fim da sobreposição do botão "Conheça a equipe" --- */
+            /* Removemos a rolagem interna e deixamos o painel inteiro rolar como um só */
+            .tutoriais-container, .sobre-container {
+                max-height: none; 
+                overflow-y: visible;
+                padding-right: 0;
+            }
+        }
+
+        /* --- CORREÇÃO 2: Fim da sobreposição do botão "Conheça a equipe" --- */
+        /* Removemos a rolagem interna e deixamos o painel inteiro rolar como um só */
+        .tutoriais-container, .sobre-container {
+            max-height: none; 
+            overflow-y: visible;
+            padding-right: 0;
+        }
+
+        /* ================= BOTÃO MODO LEVE (DISCRETO) ================= */
+        /* .link-discreto {
+            background: none; border: none; padding: 10px; margin-top: 15px;
+            color: #666; font-size: 13px; font-weight: 700; text-decoration: underline;
+            cursor: pointer; transition: color 0.2s;
+        }
+        .link-discreto:hover { color: var(--idv-dark-blue); } */
+
+        /* .btn-modo-leve {
+            background: #E0FFF0; color: #004357; 
+            border: 2px solid #00ACDE; border-radius: 20px;
+            padding: 8px 25px; font-size: 13px; font-weight: 900;
+            text-decoration: none; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 15px;
+        }
+        .btn-modo-leve:hover { background: #B9EFFF; transform: translateY(-2px); }
+        .btn-modo-leve:active { transform: translateY(2px); box-shadow: none; } */
+
+        .btn-modo-leve {
+            background: var(--idv-mint); color: #888; /* Fundo branco e texto cinza discreto */
+            border: 3px solid var(--idv-pale-blue); border-radius: 20px;
+            padding: 8px 25px; font-size: 13px; font-weight: 700;
+            text-decoration: none; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-top: 15px;
+        }
+        .btn-modo-leve:hover { 
+            background: #F1FFF8; color: var(--idv-dark-blue);
+            border: 3px solid var(--idv-light-blue); transform: translateY(0px); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .btn-modo-leve:active { transform: translateY(4px); box-shadow: none; }
+
+        /* Ajuste para o botão do Modo Leve no celular */
+        @media screen and (max-height: 600px) and (orientation: landscape) {
+            .btn-modo-leve { padding: 5px 10px; font-size: 9px; margin-top: 25px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer"></div>
+    <img src="images/fundo.jpg" class="bg-imagem-real" alt="Fundo">
+    <div class="character-layer" id="doctor-bg"></div>
+
+    <div class="view active" id="view-splash">
+        <img src="images/Logo.png" alt="Código Cuidado" class="logo-img" onerror="this.style.display='none';">
+        <div class="bar-bg"><div class="bar-fill"></div></div>
+    </div>
+
+    <div class="view" id="view-menu">
+        <div class="menu-card menu-horizontal">
+            <!-- <button class="btn-icone btn-instalar" onclick="window.open(window.parent.location.href, '_blank')" title="Instalar como App">📱</button> -->
+            <!-- HTML: Substituir o botão btn-instalar por este container -->
+            <div class="instalar-container">
+                <!-- O botão original modificado para não ativar de imediato, apenas focar -->
+                <button class="btn-icone btn-instalar" title="Instalar como App" tabindex="0">📱
+                    <span class="sr-only">Instalar como App</span>
+                </button>
+
+                <!-- O Card de Instruções (Escondido por padrão, aparece no hover) -->
+                <!-- <div class="instalar-tooltip">
+                    <h4>Como instalar o jogo como um App:</h4>
+
+                    <p>Clique no botão "Abrir Nova Aba" e adicione o jogo à tela inicial seguindo as instruções abaixo.</p>
+                    <details style="position: relative; margin-bottom: 10px; cursor: pointer;">
+                        <summary style="font-size: 12px; color: var(--idv-light-blue); font-weight: 900; outline: none; transition: 0.2s;">
+                            Por que abrir uma nova aba?
+                        </summary>
+                        <p style="position: absolute; top: 100%; left: 0; width: 100%; background: var(--idv-white); border: 2px solid var(--idv-light-blue); border-radius: 8px; padding: 10px; font-size: 11px; color: #555; margin-top: 5px; margin-bottom: 0; line-height: 1.3; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 200; box-sizing: border-box;">
+                            A plataforma itch.io roda o jogo dentro de uma "caixa" (iframe). Para que o seu celular consiga instalar o aplicativo corretamente, precisamos abrir o link direto do jogo nesta nova aba.
+                        </p>
+                    </details>
+
+                    <div class="instrucao-so">
+                        <strong>
+                            <svg viewBox="0 0 384 512" width="12" height="12" fill="currentColor" style="vertical-align: middle; margin: 0 2px;"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+                            iOS (Safari):</strong><br>
+                        Toque no ícone de Compartilhar <i class="fa-solid fa-arrow-up-from-bracket"></i> e selecione "Adicionar à Tela de Início".
+                    </div>
+                    
+                    <div class="instrucao-so">
+                        <strong>🤖 Android (Chrome):</strong><br>
+                        Toque no Menu <i class="fa-solid fa-ellipsis-vertical"></i> ou nos três pontos do navegador e escolha "Adicionar à tela inicial" ou "Instalar".
+                    </div>
+
+                    <button class="btn-abrir-cheia" onclick="window.open(window.parent.location.href, '_blank')">Abrir Nova Aba</button>
+                </div> -->
+
+                <!-- O Card de Instruções (Escondido por padrão, aparece no hover) -->
+                <div class="instalar-tooltip">
+                    <h4>Como instalar o jogo como um App?</h4>
+                    <p>Clique no botão "Abrir Nova Aba" e adicione o jogo à tela inicial do seu celular.</p>
+
+                    <!-- Texto expansível com sobreposição -->
+                    <details style="position: relative; margin-bottom: 10px; cursor: pointer;">
+                        <summary style="font-size: 12px; color: var(--idv-light-blue); font-weight: 900; outline: none; transition: 0.2s;">
+                            Como adicionar o jogo à tela inicial?
+                        </summary>
+                        <div style="position: absolute; top: 100%; left: 0; width: 100%; background: var(--idv-white); border: 2px solid var(--idv-light-blue); border-radius: 8px; padding: 10px; font-size: 11px; color: #555; margin-top: 5px; margin-bottom: 0; line-height: 1.3; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 200; box-sizing: border-box;">
+                            <div class="instrucao-so">
+                                <strong>
+                                    <svg viewBox="0 0 384 512" width="12" height="12" fill="currentColor" style="vertical-align: middle; margin: 0 2px;"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+                                    iOS (Safari):</strong><br>
+                                Toque no ícone de Compartilhar <i class="fa-solid fa-arrow-up-from-bracket"></i> e selecione "Adicionar à Tela de Início".
+                            </div>
+                            
+                            <div class="instrucao-so">
+                                <strong>🤖 Android (Chrome):</strong><br>
+                                Toque no Menu <i class="fa-solid fa-ellipsis-vertical"></i> ou nos três pontos do navegador e escolha "Adicionar à tela inicial" ou "Instalar".
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Texto expansível com sobreposição -->
+                    <details style="position: relative; margin-bottom: 10px; cursor: pointer;">
+                        <summary style="font-size: 12px; color: var(--idv-light-blue); font-weight: 900; outline: none; transition: 0.2s;">
+                            Por que abrir uma nova aba?
+                        </summary>
+                        <div style="position: absolute; top: 100%; left: 0; width: 100%; background: var(--idv-white); border: 2px solid var(--idv-light-blue); border-radius: 8px; padding: 10px; font-size: 11px; color: #555; margin-top: 5px; margin-bottom: 0; line-height: 1.3; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 200; box-sizing: border-box;">
+                            <div class="instrucao-so">
+                                A plataforma itch.io roda o jogo dentro de uma "caixa" (iframe). Para que o seu celular consiga instalar o aplicativo corretamente, precisamos abrir o link direto do jogo nesta nova aba.
+                            </div>
+                        </div>
+                    </details>
+
+                    <button class="btn-abrir-cheia" onclick="window.open(window.parent.location.href, '_blank')">Abrir Nova Aba</button>
+                </div>
+            </div>
+
+            <div class="imagem-acessivel">
+                <!-- O aria-hidden="true" esconde a imagem dos leitores nativos para que não leiam em duplicidade -->
+                <img src="images/Logo.png" alt="Código Cuidado" aria-hidden="true" class="logo-img" style="margin:0; width: 280px;" onerror="this.style.display='none';">
+
+                <!-- Este é o texto que o VLibras e o nosso Leitor de Áudio vão capturar -->
+                <span class="sr-only">Código Cuidado.</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; justify-content: center; margin-top: 10px; align-items: center;">
+                <button class="btn btn-primario" onclick="mudarTela('view-perfil')">Começar</button>
+                <button class="btn btn-secundario" onclick="mudarTela('view-tutoriais')">Tutoriais</button>
+            </div>
+        </div>
+        <button class="btn btn-secundario btn-flutuante" onclick="mudarTela('view-sobre')">Sobre o Projeto</button>
+    </div>
+
+    <!-- <div class="view" id="view-tutoriais">
+        <div class="menu-card">
+            <button class="btn-icone btn-voltar" onclick="mudarTela('view-menu')"></button>
+            <div class="titulo-view">Tutoriais</div>
+            <div id="titulo-jogar-como">
+                <span class="jogar-label">Tutoriais</span>
+                <span class="jogar-titulo"></span>
+            </div>
+            <div class="sobre-box" style="width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; color: #888;">
+                [ Conteúdo dos Tutoriais em Breve ]
+            </div>
+        </div>
+    </div> -->
+    <div class="view" id="view-tutoriais">
+        <div class="menu-card">
+            <button class="btn-icone btn-voltar" onclick="mudarTela('view-menu')" title="Voltar ao Menu">
+                <span class="sr-only">Voltar ao Menu</span>
+            </button>
+
+            <!-- <div class="titulo-view">Como Jogar</div> -->
+            <div id="titulo-jogar-como">
+                <span class="jogar-label">Como Jogar</span>
+                <span class="jogar-titulo"></span>
+            </div>
+            
+            <div class="tutoriais-container">
+                <div class="tutorial-item">
+                    <h3>🏥 Escolha de Perfis</h3>
+                    <!-- <p>A experiência muda dependendo do seu papel. Como <strong>Profissional</strong>, você aprenderá as regras de triagem e manuseio de dados no dia a dia do atendimento. Como <strong>Paciente</strong>, você descobrirá como proteger seus direitos e informações pessoais.</p> -->
+                    <p>A experiência muda dependendo do seu papel. Como <strong>Profissional</strong>, você aprenderá as regras de triagem e manuseio de dados no dia a dia do atendimento. Como <strong>Usuário do SUS</strong>, você descobrirá como proteger seus direitos e informações pessoais.</p>
+                </div>
+
+                <div class="tutorial-item">
+                    <h3>🕹️ Controles Básicos</h3>
+                    <!-- <p>No <strong>Modo 2D</strong>, utilize o mouse ou o toque na tela para interagir com os elementos dos minijogos. Se estiver jogando o <strong>Modo 3D</strong>, utilize as setas do teclado (ou as teclas W, A, S, D) ou os joysticks na tela para caminhar pela UBS (Unidade Básica de Saúde) e interagir com os personagens. O mouse controla a orientação da câmera e permite selecionar elementos na tela.</p> -->
+                    <p>Utilize o mouse ou o toque na tela para interagir com os elementos deste menu inicial e dos minijogos que são acessados a partir do ambiente 3D. No ambiente 3D, utilize as setas do teclado (ou as teclas W, A, S, D) para caminhar pela UBS (Unidade Básica de Saúde) e interagir com os personagens e os elementos da cena. O mouse controla a orientação da câmera e permite selecionar elementos na tela.</p>
+                </div>
+
+                <!-- <div class="tutorial-item">
+                    <h3>🖥️ Modos de Jogo</h3>
+                    <p>Você pode escolher entre explorar o ambiente 3D completo ou ativar o <strong>Modo 2D Simples</strong> (na tela de seleção de perfil) para ir direto ao painel de fases, focando apenas nos desafios e minijogos práticos.</p>
+                </div> -->
+
+                <!-- <div class="tutorial-item">
+                    <h3>🏆 Progresso e Recordes</h3>
+                    <p>Complete uma fase para desbloquear a seguinte. O sistema salva automaticamente sua pontuação, precisão e melhor tempo. Você pode repetir as fases concluídas quando quiser para tentar bater seus próprios recordes!</p>
+                </div> -->
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="view" id="view-sobre">
+        <div class="menu-card">
+            <button class="btn-icone btn-voltar" onclick="mudarTela('view-menu')" title="Voltar ao Menu">
+                <span class="sr-only">Voltar ao Menu</span>
+            </button>
+            <!-- <div class="titulo-view">Sobre o Projeto</div> -->
+            <div id="titulo-jogar-como">
+                <span class="jogar-label">Sobre o Projeto</span>
+                <span class="jogar-titulo"></span>
+            </div>
+
+            <div class="tutoriais-container">
+                <div class="tutorial-item">
+                    <h3>🎯 Objetivo</h3>
+                    <p>Este jogo tem o objetivo de ensinar de forma acessível e inclusiva a importância da proteção de dados na saúde.</p>
+                </div>
+
+                <div class="tutorial-item">
+                    <h3>⚖️ LGPD</h3>
+                    <p>A Lei Geral de Proteção de Dados (LGPD) estabelece regras para o uso e a proteção das informações pessoais, garantindo mais segurança, privacidade e transparência.
+                    No contexto da saúde, ela reforça o cuidado com dados sensíveis, assegurando que informações dos cidadãos sejam tratadas com respeito e responsabilidade.</p>
+                </div>
+
+                <div class="tutorial-item">
+                    <h3>🏥 PET-Saúde Digital</h3>
+                    <p>Esta iniciativa faz parte do Programa de Educação pelo Trabalho para a Saúde (PET-Saúde). É uma importante ação institucional voltada para a qualificação de profissionais e para o fortalecimento do Sistema Único de Saúde (SUS), com foco na transformação digital e na segurança das informações em saúde humana.</p>
+                </div>
+                
+                <div class="tutorial-item">
+                    <h3>🎓 Realização</h3>
+                    <p>Um projeto orgulhosamente desenvolvido no âmbito da Universidade Federal do Ceará (UFC), promovendo a integração prática entre o ambiente acadêmico, a pesquisa tecnológica e a rede de saúde pública.</p>
+                </div>
+
+                <div class="tutorial-item">
+                    <h3>🤝 Equipe GAT8</h3>
+                    <p>Desenvolvido por um grupo multidisciplinar que une tecnologia, design e cuidado. A Equipe GAT8 é formada por estudantes, professores e profissionais da saúde dedicados a criar soluções educativas inovadoras e engajadoras para a sociedade.</p>
+                </div>    
+            </div>
+
+            <div style="width: 100%; display: flex; justify-content: flex-end; margin-top: 15px;">
+                <button class="btn btn-secundario" style="width: auto; padding: 10px 25px; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="mudarTela('view-equipe')">
+                    Conheça a equipe <span style="display:inline-block; width:20px; height:20px; background-image:url('ui/d.png'); background-size:contain; background-repeat:no-repeat;"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="view" id="view-equipe">
+        <div class="menu-card menu-equipe-fixo">
+            <button class="btn-icone btn-voltar" onclick="mudarTela('view-sobre')"></button>
+            
+            <div class="titulo-view" id="equipe-titulo">Orientadores</div>
+            
+            <div class="controles-locais-equipe">
+                <button class="btn-icone btn-seta-local" id="btn-eq-prev" style="background-image: url('ui/Voltar.png');" onclick="mudarPagEquipe(-1)"></button>
+                <button class="btn-icone btn-seta-local" id="btn-eq-next" style="background-image: url('ui/Avancar.png');" onclick="mudarPagEquipe(1)"></button>
+            </div>
+
+            <div class="equipe-conteudo-wrapper">
+                <div id="eq-pag-1" class="equipe-pagina ativa">
+                    <div class="divisor-equipe">Professores</div>
+                    <div class="equipe-grid">
+                        <div class="membro-card grande" onclick="abrirZoomFoto('images/eveline.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/eveline.jpg'); background-size: cover; background-position: center -10px;"></div>
+                            <div class="membro-nome">Eveline Pinheiro <span class="membro-subtitulo">Enfermagem</span></div>
+                        </div>
+                        <div class="membro-card grande" onclick="abrirZoomFoto('images/rubens.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/rubens.jpg'); background-size: cover; background-position: center 0px;"></div>
+                            <div class="membro-nome">Rubens Nunes <span class="membro-subtitulo">Ciência da Computação<br>Campus Quixadá</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="eq-pag-2" class="equipe-pagina">
+                    <div class="divisor-equipe">Preceptoras</div>
+                    <div class="equipe-grid">
+                        <div class="membro-card" onclick="abrirZoomFoto('images/lizia.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/lizia.jpg'); background-size: cover; background-position: center -40px;"></div>
+                            <div class="membro-nome">Lizia Angelica <span class="membro-subtitulo">Enfermagem</span></div>
+                        </div>
+                        <div class="membro-card" onclick="abrirZoomFoto('images/marilia.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/marilia.jpg'); background-size: cover; background-position: center -25px;"></div>
+                            <div class="membro-nome">Marilia Magalhães <span class="membro-subtitulo">Enfermagem</span></div>
+                        </div>
+                    </div>
+
+                    <div class="divisor-equipe">Orientadora de Serviço</div>
+                    <div class="equipe-grid">
+                        <div class="membro-card" onclick="abrirZoomFoto('images/gesselena.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/gesselena.jpg'); background-size: 90%; background-position: center 0px;"></div>
+                            <div class="membro-nome"> Gesselena Farias <span class="membro-subtitulo">Enfermagem</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="eq-pag-3" class="equipe-pagina">
+                    <div class="divisor-equipe">Saúde</div>
+                    <div class="equipe-grid">
+                        <div class="membro-card" onclick="abrirZoomFoto('images/eduarda_c.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/eduarda_c.jpg'); background-size: 120%; background-position: center -20px;"></div>
+                            <div class="membro-nome">Eduarda Carvalho <span class="membro-subtitulo">Enfermagem</span></div>
+                        </div>
+                        <div class="membro-card" onclick="abrirZoomFoto('images/eduarda_r.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/eduarda_r.jpg'); background-size: 150%; background-position: center -45px;"></div>
+                            <div class="membro-nome">Eduarda Ribeiro <span class="membro-subtitulo">Enfermagem</span></div>
+                        </div>
+                        <div class="membro-card" onclick="abrirZoomFoto('images/talita.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/talita.jpg'); background-size: 150%; background-position: -35px -30px;"></div>
+                            <div class="membro-nome">Talita Almeira <span class="membro-subtitulo">Enfermagem</span></div>
+                        </div>
+                    </div>
+
+                    <div class="divisor-equipe">T.I. & Design</div>
+                    <div class="equipe-grid">
+                        <div class="membro-card" onclick="abrirZoomFoto('images/gustavo.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/gustavo.jpg'); background-size: 120%; background-position: center -5px;"></div>
+                            <div class="membro-nome">Gustavo Freitas <span class="membro-subtitulo">Ciência da Comp.<br>Campus Quixadá</span></div>
+                        </div>
+                        <div class="membro-card" onclick="abrirZoomFoto('images/luiza.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/luiza.jpg'); background-size: cover; background-position: center -15px;"></div>
+                            <div class="membro-nome">Luiza Delfino <span class="membro-subtitulo">Design Digital<br>Campus Quixadá</span></div>
+                        </div>
+                        <div class="membro-card" onclick="abrirZoomFoto('images/pedro.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/pedro.jpg'); background-size: 90%; background-position: center -75px;"></div>
+                            <div class="membro-nome">Pedro Edson <span class="membro-subtitulo">Ciência da Comp.<br>Campus Quixadá</span></div>
+                        </div>
+                        <!-- <div class="membro-card" onclick="abrirZoomFoto('images/marcos.jpg')">
+                            <div class="membro-foto" style="background-image: url('images/marcos.jpg'); background-size: 150%; background-position: center -45px;"></div>
+                            <div class="membro-nome">Marcos Sousa <span class="membro-subtitulo">Redes de Comp.</span></div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-secundario" style="width: 180px; padding: 8px; font-size: 14px; margin: 0 auto;" onclick="mudarTela('view-menu')">Voltar ao Menu</button>
+        </div>
+    </div>
+
+    <div class="view" id="view-perfil">
+        <div class="menu-card">
+            <button class="btn-icone btn-voltar" onclick="mudarTela('view-menu')"></button>
+
+            <!-- <div class="titulo-view" style="justify-content: center;">Jogar Como:</div> -->
+            <div id="titulo-jogar-como">
+                <span class="jogar-label">Qual o seu perfil?</span>
+                <span class="jogar-titulo"></span>
+            </div>
+
+            <div class="perfil-container">
+                <div class="card-perfil" onclick="iniciarJogo('profissional')">
+                    <div class="foto-perfil" style="background-image: url('images/perfilProf.png'); background-position: center -30px; background-size: 120%;"></div>
+                    <div class="nome-perfil">Profissional</div>
+                </div>
+
+                <!-- <div class="card-perfil" onclick="iniciarJogo('paciente')"> -->
+                <div class="card-perfil" onclick="iniciarJogo('usuario_sus')">
+                    <div class="foto-perfil" style="background-image: url('images/perfilPac.png'); background-position: center -10px; background-size: 100%;"></div>
+                    <!-- <div class="nome-perfil">Paciente</div> -->
+                    <div class="nome-perfil">Usuário do SUS</div>
+                </div>
+            </div>
+
+            <!-- NEW ACCESSIBILITY BUTTON -->
+            <!-- <button class="btn btn-secundario" style="margin-top: 10px; font-size: 14px; padding: 10px 20px; width: auto;" onclick="abrirModo2DDireto()">Modo Leve (Versão 2D)</button> -->
+
+            <!-- <button class="link-discreto" onclick="window.location.href = '../hub2D.html?perfil=usuario_sus'">
+                Acesso direto aos minijogos (Modo Leve)
+            </button> -->
+
+            <button class="btn-modo-leve" onclick="window.location.href = '../hub2D.html'">
+                Acesso direto às fases
+            </button>
+
+            <div class="opcoes-dificuldade" id="painel-dev">
+                <label class="switch-container">
+                    <div class="switch-textos">
+                        <span>Modo 2D Simples</span>
+                        <small>Foco direto nos minijogos</small>
+                    </div>    
+                    <input type="checkbox" id="toggle-2d" checked>
+                    <span class="slider"></span>
+                </label>    
+
+                <label class="switch-container">
+                    <div class="switch-textos">
+                        <span>Modo Desenvolvedor</span>
+                        <small>Fases desbloqueadas</small>
+                    </div>    
+                    <input type="checkbox" id="toggle-dev" checked>
+                    <span class="slider"></span>
+                </label>    
+            </div>    
+
+        </div>
+    </div>
+
+    <div class="modal-foto-overlay" id="modal-aviso" onclick="fecharAviso(event)">
+        <div class="menu-card" style="width: 90%; max-width: 400px; padding: 30px; text-align: center; cursor: default; min-height: auto;" onclick="event.stopPropagation()">
+            <div style="font-size: 45px; margin-bottom: 10px;">🚧</div>
+            <h3 style="color: var(--idv-dark-blue); font-size: 24px; font-weight: 900; margin: 0 0 10px 0;">Em Breve!</h3>
+            <p style="color: #555; font-size: 16px; font-weight: 700; line-height: 1.5; margin-bottom: 25px;">
+                <!-- O perfil <strong>Paciente</strong> está passando por aprimoramentos e estará disponível nas próximas versões.<br><br> -->
+                O perfil <strong>Usuário do SUS</strong> está passando por aprimoramentos e estará disponível nas próximas versões.<br><br>
+                Por favor, acesse o perfil <strong>Profissional</strong> para iniciar a sua experiência!
+            </p>
+            <button class="btn btn-secundario" style="width: 100%; margin: 0; padding: 12px; font-size: 18px;" onclick="fecharAviso()">Entendi</button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL DE AVISO (COMPATIBILIDADE 3D / MOBILE) ================= -->
+    <div class="modal-foto-overlay" id="modal-erro-3d" onclick="fecharErro3D(event)">
+        <div class="menu-card" style="width: 90%; max-width: 400px; padding: 30px; text-align: center; cursor: default; min-height: auto;" onclick="event.stopPropagation()">
+            <div style="font-size: 45px; margin-bottom: 10px;">🖥️</div>
+            <h3 style="color: var(--idv-dark-blue); font-size: 24px; font-weight: 900; margin: 0 0 10px 0;">Acesso Restrito</h3>
+            <p style="color: #555; font-size: 16px; font-weight: 700; line-height: 1.5; margin-bottom: 25px;">
+                O ambiente imersivo da UBS requer mais poder de processamento e foi otimizado para <strong>computadores</strong>.<br><br>
+                Para explorar a unidade de saúde em 3D, por favor, acesse o nosso link através do seu notebook ou computador de mesa!
+            </p>
+            <button class="btn btn-primario" style="width: 100%; margin: 0; padding: 12px; font-size: 18px;" onclick="fecharErro3D()">Entendi</button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL DE AVISO (CARREGANDO 3D) ================= -->
+    <div class="modal-foto-overlay" id="modal-carregando" onclick="fecharCarregamento(event)">
+        <div class="menu-card" style="width: 90%; max-width: 400px; padding: 30px; text-align: center; cursor: default; min-height: auto;" onclick="event.stopPropagation()">
+            <div style="font-size: 45px; margin-bottom: 10px;">⏳</div>
+            <h3 style="color: var(--idv-dark-blue); font-size: 24px; font-weight: 900; margin: 0 0 10px 0;">Preparando a UBS...</h3>
+            <p style="color: #555; font-size: 16px; font-weight: 700; line-height: 1.5; margin-bottom: 25px;">
+                O ambiente 3D ainda está sendo montado em segundo plano.<br><br>
+                Por favor, aguarde alguns instantes e tente novamente!
+            </p>
+            <button class="btn btn-secundario" style="width: 100%; margin: 0; padding: 12px; font-size: 18px;" onclick="fecharCarregamento()">Entendi</button>
+        </div>
+    </div>
+
+    <div class="modal-foto-overlay" id="modal-zoom-foto" onclick="fecharZoomFoto(event)">
+        <img id="img-zoom-display" class="modal-foto-img" src="" alt="Membro da Equipe">
+        <button class="btn-fechar-zoom" onclick="fecharZoomFoto(event)">Fechar Imagem</button>
+    </div>
+
+    <script>
+
+        // =========================================================
+        // CHAVE MESTRE DO DESENVOLVEDOR
+        // true  = Mostra sliders, permite usar 2D e dev mode.
+        // false = Esconde sliders, força 3D e bloqueia perfil paciente (Modo Juízes).
+        // =========================================================
+        // const MODO_DESENVOLVEDOR = true; // Altere para false para ocultar o painel de desenvolvedor e bloquear o perfil paciente
+        const MODO_DESENVOLVEDOR = false;  // Troque para true para habilitar o modo desenvolvedor
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Ao carregar a página, decide se mostra ou esconde o painel (com os toggles de 2D e Dev) com base na constante MODO_DESENVOLVEDOR
+            const painelDev = document.getElementById('painel-dev');
+            if (painelDev) {
+                painelDev.style.display = MODO_DESENVOLVEDOR ? 'flex' : 'none';
+            }
+            // // Esconde o botão de instalação se não for dispositivo móvel
+            // const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            // const instalarContainer = document.querySelector('.instalar-container');
+            // if (instalarContainer) {
+            //     // if (!isMobile) {
+            //     //     instalarContainer.style.display = 'none';
+            //     // } else {
+            //     //     instalarContainer.style.display = 'flex';
+            //     // }
+            // }
+        });
+
+        // Sincronizar com a barra de carregamento, .bar-fill, que dura 1.5s, então o splash screen dura 1.6s para garantir que a animação termine antes de mudar de tela.
+        let splashTimer = setTimeout(() => { mudarTela('view-menu'); }, 1600);
+
+        function pularParaPerfil() {
+            clearTimeout(splashTimer);
+            mudarTela('view-perfil');
+        }
+
+        // const urlParams = new URLSearchParams(window.location.search);
+        // if (urlParams.get('pular') === 'true') {
+        //     pularParaPerfil();
+            
+        //     if (urlParams.has('modo2d')) {
+        //         document.getElementById('toggle-2d').checked = (urlParams.get('modo2d') === 'true');
+        //     }
+        //     if (urlParams.has('dev')) {
+        //         document.getElementById('toggle-dev').checked = (urlParams.get('dev') === 'true');
+        //     }
+        // }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // 1. CARREGAR ESTADOS SALVOS (O Segredo!)
+        // Lemos a URL primeiro (caso venha do Hub2D). Se não tiver na URL, puxamos da Memória Cache!
+        if (urlParams.has('dev')) {
+            document.getElementById('toggle-dev').checked = (urlParams.get('dev') === 'true');
+        } else {
+            const savedDev = localStorage.getItem('lgpd_modo_dev');
+            if (savedDev !== null) document.getElementById('toggle-dev').checked = (savedDev === 'true');
+        }
+
+        if (urlParams.has('modo2d')) {
+            document.getElementById('toggle-2d').checked = (urlParams.get('modo2d') === 'true');
+        } else {
+            const saved2D = localStorage.getItem('lgpd_modo_2d');
+            if (saved2D !== null) document.getElementById('toggle-2d').checked = (saved2D === 'true');
+        }
+
+        // 2. SALVAR SEMPRE QUE O USUÁRIO CLICAR
+        // Se o jogador mudar a chave, salvamos imediatamente na memória do navegador.
+        document.getElementById('toggle-dev').addEventListener('change', function() {
+            localStorage.setItem('lgpd_modo_dev', this.checked);
+        });
+        document.getElementById('toggle-2d').addEventListener('change', function() {
+            localStorage.setItem('lgpd_modo_2d', this.checked);
+        });
+
+        // 3. PULAR INTRO SE SOLICITADO
+        if (urlParams.get('pular') === 'true') {
+            pularParaPerfil();
+        }
+
+
+
+        window.addEventListener("message", (event) => {
+            if (event.data === "pular-para-perfil") {
+                pularParaPerfil();
+            }
+        });
+
+        function mudarTela(idNovaTela) {
+            const telaAtiva = document.querySelector('.view.active');
+            if (telaAtiva) telaAtiva.classList.remove('active');
+            
+            const proximaTela = document.getElementById(idNovaTela);
+            if (proximaTela) proximaTela.classList.add('active');
+
+            if (idNovaTela === 'view-equipe') {
+                pagEquipeAtual = 1;
+                atualizarPaginaEquipe();
+            }
+
+            const doctorBg = document.getElementById('doctor-bg');
+            if (doctorBg) {
+                if(idNovaTela === 'view-menu' || idNovaTela === 'view-splash') {
+                    doctorBg.style.opacity = '1';
+                } else {
+                    doctorBg.style.opacity = '0';
+                }
+            }
+        }
+
+        // =========================================================
+        // Lógica de Paginação da Equipe (Correção Definitiva)
+        // =========================================================
+        let pagEquipeAtual = 1;
+        const totalPagEquipe = 3;
+        const titulosEquipe = ["Orientadores", "Profissionais", "Monitores"];
+
+        function mudarPagEquipe(dir) {
+            pagEquipeAtual += dir;
+            atualizarPaginaEquipe();
+        }
+
+        function atualizarPaginaEquipe() {
+            // Garante ocultar as outras páginas e exibir apenas a correta
+            document.querySelectorAll('.equipe-pagina').forEach(el => el.classList.remove('ativa'));
+            document.getElementById(`eq-pag-${pagEquipeAtual}`).classList.add('ativa');
+            
+            // Atualiza dinamicamente o título
+            document.getElementById('equipe-titulo').innerText = titulosEquipe[pagEquipeAtual - 1];
+            
+            // Controle estável de exibição das setas de navegação
+            document.getElementById('btn-eq-prev').style.visibility = pagEquipeAtual > 1 ? 'visible' : 'hidden';
+            document.getElementById('btn-eq-next').style.visibility = pagEquipeAtual < totalPagEquipe ? 'visible' : 'hidden';
+        }
+
+        function escolherPerfil(perfilSelecionado) {
+            // if (window.parent && window.parent.DefinePerfilDoJogador) {
+            //     window.parent.DefinePerfilDoJogador(perfilSelecionado);
+            // } else {
+            //     // alert("Perfil escolhido: " + perfilSelecionado.toUpperCase() + "\n(Teste no navegador sem a Unity concluído)");
+            //     // ======= A MÁGICA ACONTECE AQUI =======
+            //     // O alert feio sai de cena e o modal bonito entra!
+            //     mostrarErro3D();
+            // }
+
+
+            
+            // // 1. Descobrimos se o jogador está em um celular ou tablet
+            // const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            // if (isMobile) {
+            //     // É dispositivo móvel: exibimos o erro pedindo para usar o notebook
+            //     mostrarErro3D();
+            // } else {
+            //     // É notebook/PC: o 3D DEVE funcionar
+            //     if (window.parent && window.parent.DefinePerfilDoJogador) {
+            //         // A função existe, significa que a Unity terminou de carregar
+            //         window.parent.DefinePerfilDoJogador(perfilSelecionado);
+            //     } else {
+            //         // A função ainda não existe, significa que a Unity ainda está carregando
+            //         mostrarAvisoCarregamento();
+            //     }
+            // }
+
+
+
+            if (window.parent && window.parent.DefinePerfilDoJogador) {
+                // A função existe, significa que a Unity terminou de carregar
+                window.parent.DefinePerfilDoJogador(perfilSelecionado);
+            } else {
+                // A função ainda não existe, significa que a Unity ainda está carregando
+                mostrarAvisoCarregamento();
+            }
+        }
+
+        function iniciarJogo(perfilSelecionado) {
+            // // Se estiver no modo de produção (juízes) e clicar no paciente, bloqueia e avisa.
+            // // if (!MODO_DESENVOLVEDOR && perfilSelecionado === 'paciente') {
+            // if (!MODO_DESENVOLVEDOR && perfilSelecionado === 'usuario_sus') {
+            //     mostrarAviso();
+            //     return; // Aborta a função aqui, não faz mais nada!
+            // }
+
+            // O MODO_DESENVOLVEDOR define se vamos ler as chaves ou forçar falso
+            const usar2D = MODO_DESENVOLVEDOR ? document.getElementById('toggle-2d').checked : false;
+            const modoDev = MODO_DESENVOLVEDOR ? document.getElementById('toggle-dev').checked : false;
+
+            if (usar2D) {
+                window.location.href = `../hub2D.html?perfil=${perfilSelecionado}&dev=${modoDev}`;
+            } else {
+                // =========================================================
+                // CORREÇÃO WEBGL: Devolve o foco para a Unity antes de fechar o menu!
+                // Isso impede que a tela fique preta aguardando um clique.
+                // =========================================================
+                if (window.parent) {
+                    window.parent.focus(); // Foca na janela principal
+                    
+                    // Procura o Canvas da Unity na página principal e força o foco nele
+                    const unityCanvas = window.parent.document.querySelector('canvas');
+                    if (unityCanvas) unityCanvas.focus();
+                }
+                
+                // Manda a mensagem para a Unity carregar o perfil escolhido
+                escolherPerfil(perfilSelecionado);
+            }
+        }
+
+        function abrirModo2DDireto() {
+            // Allows the user to select the profile directly in the 2D Hub
+            window.location.href = `../hub2D.html`; 
+        }
+
+        function mostrarAviso() {
+            document.getElementById('modal-aviso').classList.add('ativa');
+        }
+        function fecharAviso(event) {
+            document.getElementById('modal-aviso').classList.remove('ativa');
+        }
+    
+        function mostrarErro3D() {
+            document.getElementById('modal-erro-3d').classList.add('ativa');
+        }
+        function fecharErro3D(event) {
+            document.getElementById('modal-erro-3d').classList.remove('ativa');
+        }
+
+        function mostrarAvisoCarregamento() {
+            document.getElementById('modal-carregando').classList.add('ativa');
+        }
+        function fecharCarregamento(event) {
+            document.getElementById('modal-carregando').classList.remove('ativa');
+        }
+
+        // =========================================================
+        // Lógica do Modal de Zoom da Equipe
+        // =========================================================
+        function abrirZoomFoto(caminhoImagem) {
+            const imgDisplay = document.getElementById('img-zoom-display');
+            imgDisplay.src = caminhoImagem;
+            document.getElementById('modal-zoom-foto').classList.add('ativa');
+        }
+
+        function fecharZoomFoto(event) {
+            // Garante que só fecha se clicar no botão ou no fundo escuro (ignorando clique na própria foto)
+            if (!event || event.target.id === 'modal-zoom-foto' || event.target.classList.contains('btn-fechar-zoom')) {
+                document.getElementById('modal-zoom-foto').classList.remove('ativa');
+                // Limpa a foto apos a transição para não aparecer a foto antiga no próximo clique
+                setTimeout(() => { document.getElementById('img-zoom-display').src = ""; }, 300);
+            }
+        }
+    </script>
+
+    <script src="../acessibilidade.js"></script>
+
+</body>
+</html>

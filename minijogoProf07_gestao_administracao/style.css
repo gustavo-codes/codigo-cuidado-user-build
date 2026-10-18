@@ -1,0 +1,158 @@
+/* ================= VARIÁVEIS DE TEMA DINÂMICAS ================= */
+:root {
+    --cor-tema: #455a64;       /* Slate / Azul Metálico */
+    --cor-tema-escuro: #263238;/* Slate Escuro */
+    --cor-tema-claro: #cfd8dc; /* Slate Muito Claro */
+}
+
+body::before {
+    content: "🏢📂"; position: absolute; font-size: 250px; opacity: 0.05; z-index: -1;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); letter-spacing: -20px;
+
+    /* NOVO: Impede quebra de linha em telas pequenas */
+    white-space: nowrap;
+}
+
+/* ================= ÁREA DE JOGO ================= */
+.area-jogo {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; max-width: 900px; height: 100%; 
+    padding-top: 75px; padding-bottom: 20px; 
+    box-sizing: border-box; position: relative; gap: 15px;
+}
+
+/* Garante que o conteúdo das colunas não estique na versão para PC */
+.coluna-esquerda, .coluna-direita {
+    width: 100%; display: flex; flex-direction: column; align-items: center;
+}
+
+.contador-tabelas { 
+    font-size: 16px; font-weight: bold; color: white; background: var(--cor-tema-escuro); 
+    padding: 5px 15px; border-radius: 20px; margin: 0 auto; max-width: 300px;
+}
+
+.cartao-solicitacao {
+    background: #ffffff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border-top: 10px solid var(--cor-tema); width: 100%; max-width: 600px;
+    display: flex; flex-direction: column; padding: 25px; box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative; margin-left: auto; margin-right: auto; margin-bottom: auto;
+}
+.cartao-solicitacao.anim-saida { transform: scale(0.8) translateY(-50px); opacity: 0; pointer-events: none;}
+.cartao-solicitacao.tremor { animation: shakeError 0.4s ease-in-out; border-top-color: #d32f2f;}
+@keyframes shakeError { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
+
+.solicitacao-header { display: flex; align-items: center; gap: 15px; border-bottom: 2px dashed #eee; padding-bottom: 15px; margin-bottom: 15px;}
+.solicitacao-icone { font-size: 40px; background: var(--cor-tema-claro); width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid var(--cor-tema);}
+.solicitacao-origem { font-size: 20px; font-weight: bold; color: #333; margin: 0; line-height: 1.2;}
+.solicitacao-tipo { font-size: 13px; color: var(--cor-tema-escuro); text-transform: uppercase; font-weight: bold;}
+
+.solicitacao-body { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; gap: 10px;}
+.solicitacao-body span { font-size: 13px; color: #757575; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+.solicitacao-texto { font-size: 18px; font-weight: 500; color: #212121; line-height: 1.4; background: #f5f5f5; padding: 15px; border-radius: 10px; border-left: 4px solid var(--cor-tema-claro);}
+
+/* 3 Botões de Ação */
+.controles-decisao {
+    display: flex; gap: 15px; width: 95%; max-width: 700px; justify-content: center; flex-wrap: wrap; z-index: 60;
+}
+.btn-decisao {
+    flex: 1; min-width: 140px; padding: 15px 10px; border-radius: 15px; font-size: 15px; font-weight: bold;
+    color: white; cursor: pointer; border: none; text-transform: uppercase;
+    box-shadow: 0 6px 0px rgba(0,0,0,0.2); transition: all 0.1s;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+}
+.btn-decisao:active { transform: translateY(6px); box-shadow: 0 0px 0px rgba(0,0,0,0.2); }
+
+.btn-proibir { background: #d32f2f; box-shadow: 0 6px 0px #b71c1c; } 
+.btn-avaliar { background: #ff9800; box-shadow: 0 6px 0px #e65100; color: #fff;} 
+.btn-permitir { background: #2e7d32; box-shadow: 0 6px 0px #1b5e20; } 
+
+.icone-btn { font-size: 28px; line-height: 1; margin-bottom: 2px;}
+
+/* ================= ALERTAS (TOASTS) CLICÁVEIS ================= */
+/* .zona-alertas-local {
+    position: relative; width: 85%; margin: 15px auto 0 auto; 
+    display: flex; flex-direction: column; align-items: center; gap: 10px; 
+    pointer-events: none; z-index: 100; min-height: 100px; 
+} */
+/* .zona-alertas-local {
+    position: relative; width: 90%; margin: 15px auto 0 auto; 
+    display: flex; flex-direction: column; align-items: center; gap: 10px; 
+    pointer-events: none; z-index: 100;
+} */
+.zona-alertas-local {
+    position: relative; width: 90%; max-width: 600px; margin: 15px auto 0 auto; 
+    display: flex; flex-direction: column; align-items: center; gap: 10px; 
+    pointer-events: none; z-index: 100; min-height: 100px; 
+}
+
+/* #toast-feedback, #alerta-combo {
+    position: relative; width: max-content; max-width: 100%; background: white; 
+    border-radius: 15px; padding: 12px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); text-align: center;
+    font-size: 15px; font-weight: 500; opacity: 0; color: #111;
+    transform: translateY(20px); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-left: 8px solid transparent; pointer-events: none;
+} */
+#toast-feedback, #alerta-combo {
+    position: relative; width: 100%; max-width: 600px; background: white; 
+    border-radius: 15px; padding: 12px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); text-align: center;
+    font-size: 15px; font-weight: 500; opacity: 0; color: #111;
+    transform: translateY(20px); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-left: 8px solid transparent; pointer-events: none;
+    box-sizing: border-box; /* Fundamental para o toast não vazar da tela */
+}
+
+#toast-feedback.show, #alerta-combo.show { 
+    transform: translateY(0); opacity: 1; pointer-events: auto; cursor: pointer; 
+}
+
+#toast-feedback h3 { margin: 0 0 3px 0; font-size: 15px; text-transform: uppercase; }
+#toast-feedback.sucesso { border-left-color: #4caf50; }
+#toast-feedback.sucesso h3 { color: #2e7d32; }
+#toast-feedback.erro { border-left-color: #f44336; }
+#toast-feedback.erro h3 { color: #c62828; }
+#alerta-combo { background: #ff9800; color: white; border-radius: 30px; font-weight: bold; border-left: none;}
+
+/* ================= RESPONSIVIDADE ================= */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .area-jogo { padding-top: 45px; padding-bottom: 5px; gap: 10px; flex-direction: row; align-items: stretch; justify-content: center;}
+
+    .coluna-esquerda { flex: 1.4; height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 5px; align-items: center;}
+    /* Adicionamos position: relative para prender os alertas dentro desta coluna */
+    /* .coluna-direita { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: center; position: relative;} */
+    .coluna-direita { 
+        flex: 1; height: 100%; display: flex; flex-direction: column; 
+        justify-content: center; align-items: center; 
+    }
+
+    .contador-tabelas { font-size: 11px; padding: 3px 8px;}
+
+    .cartao-solicitacao { padding: 15px; border-top-width: 6px; margin: 0; max-height: 85vh; overflow-y: auto;}
+    .solicitacao-header { padding-bottom: 10px; margin-bottom: 10px; gap: 10px;}
+    .solicitacao-icone { font-size: 30px; width: 50px; height: 50px; }
+    .solicitacao-origem { font-size: 16px; }
+    .solicitacao-tipo { font-size: 11px; }
+    .solicitacao-body span { font-size: 11px; }
+    .solicitacao-texto { font-size: 14px; padding: 10px; }
+
+    .controles-decisao { flex-direction: column; width: 100%; gap: 10px; }
+    .btn-decisao { padding: 10px; font-size: 13px; min-width: 0; flex-direction: row; box-shadow: 0 4px 0px rgba(0,0,0,0.2); justify-content: flex-start; padding-left: 15px;}
+    .btn-decisao:active { transform: translateY(4px); }
+    .icone-btn { font-size: 20px; margin-bottom: 0;}
+
+    /* .zona-alertas-local { position: fixed; bottom: 15px; top: auto; left: 50%; transform: translateX(-50%); width: 70%; margin-top: 0; z-index: 100; } */
+    /* O Alerta agora flutua no rodapé da coluna dos botões, livre do cartão! */
+    /* .zona-alertas-local { position: absolute; bottom: 0px; top: auto; left: 50%; transform: translateX(-50%); width: 95%; margin-top: 0; z-index: 100; padding-top: 0;} */
+    /* Agora é relative e tem altura mínima para reservar o espaço abaixo dos botões */
+    .zona-alertas-local {
+        position: relative; width: 95%; margin-top: 30px; z-index: 100;
+        min-height: 90px;
+        display: flex; flex-direction: column; justify-content: flex-start;
+    }
+    /* #toast-feedback, #alerta-combo { font-size: 12px; padding: 6px 12px; border-radius: 10px; max-width: 95%;} */
+    #toast-feedback, #alerta-combo {
+        font-size: 12px; padding: 8px 12px; border-radius: 10px;
+        width: 100%; box-sizing: border-box;
+    }
+    #toast-feedback h3 { font-size: 12px; margin-bottom: 2px; }
+}

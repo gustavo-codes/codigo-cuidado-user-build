@@ -1,0 +1,415 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Código Cuidado - Paciente</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Código Cuidado">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="TemplateData/meususdigital.svg">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="apple-touch-icon" href="TemplateData/meususdigital.png">
+
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100dvh;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      
+      #unity-container {
+        position: relative !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #game-wrapper {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      #unity-canvas {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+      }
+
+      #minijogo-container {
+          position: absolute;
+          top: 0; left: 0;
+          width: 100% !important;
+          height: 100% !important;
+          z-index: 9999;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #FFFFFF;
+      }
+      
+      #minijogo-container iframe {
+          aspect-ratio: 16 / 9;
+          width: 100%;
+          max-height: 100dvh;
+          max-width: 177.78dvh;
+          border: none;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          box-shadow: 0 0 20px rgba(0,0,0,0.15);
+      }
+
+      #aviso-rotacao {
+          display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+          background-color: #E0FFF0; color: #004357; z-index: 999999;
+          flex-direction: column; justify-content: center; align-items: center;
+          text-align: center; padding: 30px; font-family: sans-serif;
+          box-sizing: border-box;
+      }
+      #aviso-rotacao p {
+          line-height: 1.5;
+          max-width: 320px;
+          margin: 0 auto;
+      }
+
+      @media screen and (orientation: portrait) and (max-width: 768px) {
+          #aviso-rotacao { display: flex !important; }
+          #unity-container { display: none !important; }
+      }
+
+      @media screen and (max-height: 600px) and (orientation: landscape) {
+        #game-wrapper {
+          position: fixed !important;
+          top: 0 !important; left: 0 !important;
+          width: 100vw !important;
+          height: 100dvh !important;
+          z-index: 1000 !important;
+        }
+
+        #unity-container {
+          width: 100% !important;
+          height: 100% !important;
+        }
+
+        #unity-canvas {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+        }
+        
+        #minijogo-container {
+          height: 100% !important; 
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="aviso-rotacao">
+        <img src="menu_inicial/images/Logo.png" alt="Código Cuidado" style="max-width: 250px; width: 70%; height: auto; margin-bottom: 30px; filter: drop-shadow(0 8px 15px rgba(0,67,87,0.15));" onerror="this.style.display='none';">
+        <div style="font-size: 50px; margin-bottom: 20px;">🔄📱</div>
+        <h2>Por favor, gire o seu aparelho</h2>
+        <p>A experiência Código Cuidado foi desenhada para ser jogada com a tela na horizontal.</p>
+        <p> <br> </p>
+        <p style="font-weight: 700; line-height: 1.4;">Após girar o aparelho, experimente instalar o jogo como um app.<br> Siga as instruções que aparecem ao clicar no ícone em forma de celular📱, mostrado à esquerda na tela inicial.</p>
+    </div>
+
+    <div id="unity-container" class="unity-desktop">
+      <div id="modal-pointer-lock" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #004357; font-family: sans-serif;">
+          <div style="background: #F1FFF8; padding: 30px; border-radius: 15px; border: 4px solid #00ACDE; max-width: 400px;">
+              <div style="font-size: 40px; margin-bottom: 10px;">🖱️</div>
+              <h3 style="margin: 0 0 10px 0; font-weight: 900;">Clique para Explorar</h3>
+              <p style="margin-bottom: 20px; font-weight: bold;">O ambiente 3D precisa da sua permissão para capturar o mouse.</p>
+              <button onclick="document.getElementById('modal-pointer-lock').style.display='none'" style="background: #00ACDE; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 20px; cursor: pointer; font-weight: bold;">Entendi</button>
+          </div>
+      </div>
+
+      <div id="game-wrapper" style="position: relative; width: 100%; height: 100%;">
+          <canvas id="unity-canvas" width="960" height="600" tabindex="-1" style="width: 100%; height: 100%; display: block;"></canvas>
+
+          <div id="minijogo-container">
+              <iframe id="iframe-principal" src="menu_inicial/index.html" allow="autoplay"></iframe>
+          </div>
+      </div>
+
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+      <div id="unity-footer">
+        <div id="unity-fullscreen-button"></div>
+      </div>
+    </div>
+
+    <script>
+      window.unityPronta = false;
+      window.unityProgresso = 0;
+
+      const originalPointerLock = Element.prototype.requestPointerLock;
+
+      function marcarRetornoDeMinijogo() {
+          if (!originalPointerLock) return;
+          document.getElementById('modal-pointer-lock').style.display = 'flex';
+      }
+
+      document.addEventListener('pointerlockchange', () => {
+          if (document.pointerLockElement) {
+              document.getElementById('modal-pointer-lock').style.display = 'none';
+          }
+      });
+
+      if (originalPointerLock) {
+          Element.prototype.requestPointerLock = function() {
+              try {
+                  const promise = originalPointerLock.apply(this, arguments);
+                  if (promise && typeof promise.catch === 'function') {
+                      promise.catch(e => {
+                          document.getElementById('modal-pointer-lock').style.display = 'flex';
+                      });
+                  }
+                  return promise;
+              } catch (e) {
+                  document.getElementById('modal-pointer-lock').style.display = 'flex';
+                  throw e;
+              }
+          };
+      }
+
+      var canvas = document.querySelector("#unity-canvas");
+
+      function unityShowBanner(msg, type) {
+        var warningBanner = document.querySelector("#unity-warning");
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/gat8paciente.loader.js";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/gat8paciente.data",
+        frameworkUrl: buildUrl + "/gat8paciente.framework.js",
+        codeUrl: buildUrl + "/gat8paciente.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "UFC",
+        productName: "Código Cuidado Paciente",
+        productVersion: "0.1.2",
+        showBanner: unityShowBanner,
+      };
+
+      function notificarIframeProgresso(prog) {
+        try {
+          var iframe = document.getElementById('iframe-principal');
+          if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage({ tipo: 'progresso-unity', valor: prog }, '*');
+            if (typeof iframe.contentWindow.atualizarProgressoUnity === 'function') {
+              iframe.contentWindow.atualizarProgressoUnity(prog);
+            }
+          }
+        } catch(e) {}
+      }
+
+      function notificarIframeConclusao() {
+        try {
+          var iframe = document.getElementById('iframe-principal');
+          if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage({ tipo: 'unity-pronta' }, '*');
+            if (typeof iframe.contentWindow.unityCarregou === 'function') {
+              iframe.contentWindow.unityCarregou();
+            }
+          }
+        } catch(e) {}
+      }
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+
+        document.querySelector("#unity-container").className = "unity-mobile";
+        var gameWrapper = document.querySelector("#game-wrapper");
+        gameWrapper.className = "unity-mobile";
+        gameWrapper.style.width = "100vw";
+        gameWrapper.style.height = "100dvh";
+
+        var unityContainer = document.querySelector("#unity-container");
+        unityContainer.style.width = "100vw";
+        unityContainer.style.height = "100dvh";
+
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.className = "";
+      } else {
+        var gameWrapper = document.querySelector("#game-wrapper");
+        gameWrapper.style.width = "100vw";
+        gameWrapper.style.height = "100dvh";
+
+        var unityContainer = document.querySelector("#unity-container");
+        unityContainer.style.width = "100vw";
+        unityContainer.style.height = "100dvh";
+
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+      }
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+          window.unityProgresso = progress;
+          notificarIframeProgresso(progress);
+        }).then((unityInstance) => {
+          window.unityInstance = unityInstance;
+          window.unityPronta = true;
+          notificarIframeConclusao();
+
+          window.AvisarVitoria = function(engineObj) {
+              marcarRetornoDeMinijogo();
+
+              if (window.unityInstance && window.minijogoAlvoAtual) {
+                  window.unityInstance.SendMessage('GerenciadorDeMinijogos', 'DestravarObjetoWeb', window.minijogoAlvoAtual);
+              }
+
+              if (window.minijogoPastaAtual) {
+                  const SAVE_KEY = 'lgpd_game_save_v2';
+                  let progresso = {};
+                  try {
+                      const save = localStorage.getItem(SAVE_KEY);
+                      if (save) progresso = JSON.parse(save);
+                  } catch(e) { 
+                      console.error("Erro ao ler o localStorage na raiz:", e); 
+                  }
+
+                  const faseKey = window.minijogoPastaAtual;
+                  if (!progresso[faseKey]) {
+                      progresso[faseKey] = { concluida: false, pontuacaoMax: 0, melhorTempo: 0, melhorPrecisao: 0 };
+                  }
+                  progresso[faseKey].concluida = true;
+
+                  if (engineObj) {
+                      const pts = engineObj.pontuacao !== undefined ? engineObj.pontuacao : (engineObj.acertosTotais || 0);
+                      const tempo = engineObj.tempoRestante || 0;
+                      const acertos = engineObj.acertos || engineObj.acertosTotais || 0;
+                      const erros = engineObj.erros || engineObj.errosTotais || 0;
+                      let precisao = 100;
+                      if (engineObj.precisao !== undefined) precisao = engineObj.precisao;
+                      else if ((acertos + erros) > 0) precisao = Math.round((acertos / (acertos + erros)) * 100);
+                      
+                      if (pts > progresso[faseKey].pontuacaoMax) progresso[faseKey].pontuacaoMax = pts;
+                      if (tempo > progresso[faseKey].melhorTempo) progresso[faseKey].melhorTempo = tempo;
+                      if (precisao > (progresso[faseKey].melhorPrecisao || 0)) progresso[faseKey].melhorPrecisao = precisao;
+                  }
+
+                  localStorage.setItem(SAVE_KEY, JSON.stringify(progresso));
+              }
+          };
+
+          window.AvisarCancelamento = function() {
+              marcarRetornoDeMinijogo();
+              if (window.unityInstance) {
+                  window.unityInstance.SendMessage('GerenciadorDeMinijogos', 'FecharMinijogoWeb');
+              }
+          };
+
+          window.DefinePerfilDoJogador = function(perfil) {
+              if (window.unityInstance) {
+                  try {
+                      window.unityInstance.SendMessage('MenuManager', 'SelecionarPerfil', 'usuario_sus');
+                  } catch(e) {
+                      console.warn("SendMessage SelecionarPerfil:", e);
+                  }
+              }
+              var container = document.getElementById('minijogo-container');
+              if (container) {
+                  container.style.display = 'none';
+              }
+          };
+
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+
+            script.onerror = (e) => {
+        console.error("[Código Cuidado] Falha ao carregar o loader da Unity: " + loaderUrl, e);
+        unityShowBanner("Erro ao carregar os arquivos da Unity (" + loaderUrl + "). Verifique a conexão.", "error");
+      };
+      document.body.appendChild(script);
+
+      document.addEventListener("DOMContentLoaded", () => {
+          const containerFase = document.getElementById('minijogo-container');
+          if (!containerFase) return;
+          const iframeJogo = containerFase.querySelector('iframe');
+          if (!iframeJogo) return;
+
+          iframeJogo.addEventListener('load', () => {
+              const tentarAcordarAudio = () => {
+                  try {
+                      const iframeWin = iframeJogo.contentWindow;
+                      if (iframeWin.AudioSys && iframeWin.AudioSys.ctx && iframeWin.AudioSys.ctx.state === 'suspended') {
+                          iframeWin.AudioSys.ctx.resume();
+                      }
+                      const AudioContext = iframeWin.window.AudioContext || iframeWin.window.webkitAudioContext;
+                      if (AudioContext) new AudioContext().resume();
+                  } catch (e) {}
+              };
+
+              document.body.addEventListener('click', tentarAcordarAudio, { capture: true, once: true });
+              document.body.addEventListener('touchstart', tentarAcordarAudio, { capture: true, once: true });
+              try { iframeJogo.contentWindow.document.body.addEventListener('click', tentarAcordarAudio, { capture: true }); } catch(e) {}
+              try { iframeJogo.contentWindow.document.body.addEventListener('touchstart', tentarAcordarAudio, { capture: true }); } catch(e) {}
+          });
+
+          const btnFullscreen = document.querySelector("#unity-fullscreen-button");
+          const gameWrapper = document.querySelector('#game-wrapper');
+
+          if (btnFullscreen && gameWrapper) {
+              btnFullscreen.onclick = () => {
+                  if (gameWrapper.requestFullscreen) {
+                      gameWrapper.requestFullscreen();
+                  } else if (gameWrapper.webkitRequestFullscreen) {
+                      gameWrapper.webkitRequestFullscreen();
+                  } else if (gameWrapper.msRequestFullscreen) {
+                      gameWrapper.msRequestFullscreen();
+                  }
+              };
+          }
+      });
+    </script>
+  </body>
+</html>

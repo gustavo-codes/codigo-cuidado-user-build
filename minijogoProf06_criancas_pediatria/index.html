@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, touch-action: none">
+    <title>Fase 6 - Pediatria (LGPD)</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="stylesheet" href="../minijogos.css">
+    <link rel="stylesheet" href="../acessibilidade.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <button class="btn-voltar" onclick="Engine.cancelar()">&#8592; Sair</button>
+
+    <div class="hud">
+        <div class="hud-grupo">
+            <div class="hud-item" id="hud-tempo">⏳ 60s</div>
+            <div class="hud-item hud-btn" id="btn-pausa" onclick="Engine.togglePausa()">⏸️</div>
+            <div class="hud-item hud-btn" id="btn-mute" onclick="AudioSys.toggleMute()">🔊</div>
+        </div>
+        <div class="hud-item" id="hud-pontos-container">⭐ <span id="hud-pontos">0</span></div>
+    </div>
+
+    <div class="overlay" id="tela-intro">
+        <div class="painel-central">
+            <h2 id="txt-intro-titulo">Carregando...</h2>
+            <p id="txt-intro-desc"></p>
+            <p id="txt-intro-dica"></p>
+            <p id="txt-intro-meta" style="color: #d32f2f; font-weight: bold;"></p>
+            
+            <div class="opcoes-dificuldade">
+                <label class="switch-container">
+                    <div class="switch-textos">
+                        <span>Modo Aleatório</span>
+                        <small>(Embaralhar Casos)</small>
+                    </div>
+                    <input type="checkbox" id="toggle-dificuldade" checked>
+                    <span class="slider"></span>
+                </label>
+                <label class="assistencia-label" title="Tempo Extra (+50% tempo)">
+                    <input type="checkbox" id="check-tempo-extra">
+                    <span class="assistencia-icone">+⏱️</span>
+                </label>
+            </div>
+
+            <div class="botoes-coluna">
+                <!-- <button class="btn-acao" onclick="Engine.iniciar()">Iniciar Plantão</button> -->
+                <button class="btn-acao" onclick="Engine.iniciar()">Iniciar</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.cancelar()">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay oculto" id="tela-fim">
+        <div class="painel-central">
+            <h2 id="txt-fim-titulo">Fim</h2>
+            <p id="txt-fim-msg"></p>
+            <div class="texto-legal" id="txt-fim-lei"></div>
+            
+            <div class="estatisticas-fim">
+                <div class="stats-row">
+                    <div>Casos:<span id="final-qtde" style="color: #424242;">0/0</span></div>
+                    <div>Tempo Restante:<span id="final-tempo" style="color: var(--cor-tema-escuro);">0s</span></div>
+                    <div>Precisão:<span id="final-taxa">0%</span></div>
+                </div>
+                <div class="score-destaque">
+                    Pontuação Final
+                    <span id="final-pontos">0</span>
+                </div>
+            </div>
+
+            <div class="botoes-coluna" id="botoes-fim"></div>
+        </div>
+    </div>
+
+    <div class="area-jogo" id="area-jogo" style="display: none;">
+        
+        <div class="coluna-esquerda">
+            <div class="contador-tabelas" id="contador-tabelas">Caso 1 / 10</div>
+            
+            <div class="cartao-paciente" id="cartao-ativo">
+                <div class="paciente-header">
+                    <div class="paciente-icone" id="ui-icone">🧒</div>
+                    <div>
+                        <h3 class="paciente-nome" id="ui-nome">Nome</h3>
+                        <span class="paciente-idade" id="ui-idade">Idade</span>
+                    </div>
+                </div>
+                <div class="paciente-body">
+                    <span>Situação na Recepção:</span>
+                    <div class="paciente-situacao" id="ui-situacao">A carregar situação médica do paciente...</div>
+                </div>
+            </div>
+
+            <div class="zona-alertas-local">
+                <div id="toast-feedback">
+                    <h3 id="toast-titulo">Atenção</h3>
+                    <span id="toast-texto">Texto.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="coluna-direita">
+            <div class="controles-decisao">
+                <button class="btn-decisao btn-responsavel" onclick="Engine.avaliar('responsavel')">
+                    <span class="icone-btn">👨‍👦</span> Exigir Responsável
+                </button>
+                <button class="btn-decisao btn-urgencia" onclick="Engine.avaliar('urgencia')">
+                    <span class="icone-btn">🚨</span> Atender Urgência
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="overlay oculto" id="tela-pausa">
+        <div class="painel-central" style="position: relative; min-height: 200px;">
+            <button onclick="Engine.esconderOverlayPausa()" 
+                style="position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 28px; cursor: pointer; color: #666;" title="Ocultar Painel">
+                👁️
+            </button>
+
+            <h1 style="font-size: 40px; color: var(--cor-tema-escuro); margin: 0;">PAUSADO</h1>
+            <p style="color: #201e1e; margin-top: 10px;">O cronômetro e os alertas estão congelados.</p>
+            
+            <div class="botoes-coluna" style="margin-top: 20px;">
+                <button class="btn-acao" onclick="Engine.togglePausa()">▶️ Retomar Jogo</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.iniciar()">🔄 Reiniciar Fase</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.voltarAoMenu()">⏪ Introdução</button>
+            </div>
+
+            <p style="color: #201e1e; font-size: 12px; margin-top: 15px;">Dica: Clique no 👁️ acima para ocultar o painel sem despausar.</p>
+        </div>
+    </div>
+
+    <script src="../minijogos.js"></script>
+    <script src="../acessibilidade.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>

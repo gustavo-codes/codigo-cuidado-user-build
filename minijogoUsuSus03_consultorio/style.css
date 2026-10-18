@@ -1,0 +1,268 @@
+/* ================= VARIÁVEIS DE TEMA ESPECÍFICAS ================= */
+:root {
+    --cor-tema: #5e35b1; /* Roxo Pesquisa Clínica */
+    --cor-tema-escuro: #4527a0;
+    --cor-tema-claro: #ede7f6;
+    --cor-erro: #d32f2f;
+    --cor-sucesso: #2e7d32;
+}
+
+body::before {
+    content: "🔬📊"; position: absolute; font-size: 200px; opacity: 0.05; z-index: -1;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); letter-spacing: -20px;
+    white-space: nowrap;
+}
+
+/* ================= ÁREA DE JOGO ================= */
+.area-jogo {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; max-width: 900px; height: 100%;
+    padding-top: 60px; padding-bottom: 20px;
+    box-sizing: border-box; position: relative;
+    /* overflow: hidden; <--- APAGUE ESTA LINHA PARA PARAR DE CORTAR O CARTÃO */
+}
+
+/* ================= MECÂNICA DE SWIPE ================= */
+.deck-area {
+    position: relative; width: 100%; max-width: 400px; height: 350px;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+}
+
+.cartoes-pilha {
+    position: relative; width: 100%; height: 100%;
+}
+
+/* .ficha-dado {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    Fundo com leve degradê diagonal para dar volume
+    background: linear-gradient(135deg, #ffffff 0%, #f6c261 100%); 
+    Fundo com leve degradê circular
+    background: radial-gradient(circle, #ffffff 0%, #ede7ff 100%);
+    
+    Borda mais elegante e arredondada
+    border: 5px solid var(--cor-tema); border-radius: 25px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    Sombra mais difusa e leve inset (sombra interna) para parecer uma ficha física
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15), inset 0 0 15px rgba(0,0,0,0.05); 
+    cursor: grab; text-align: center;
+    padding: 20px; box-sizing: border-box; font-size: 28px; font-weight: 900; color: #111;
+    transform-origin: 50% 100%; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+    touch-action: none; user-select: none;
+}
+.ficha-dado .subtexto { font-size: 14px; font-weight: 700; color: #666; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px;}
+
+.ficha-dado.dragging {
+    transition: none; cursor: grabbing; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.ficha-dado.anim-right { transform: translateX(150%) rotate(30deg) !important; opacity: 0; pointer-events: none; transition: all 0.5s ease-in; }
+.ficha-dado.anim-left { transform: translateX(-150%) rotate(-30deg) !important; opacity: 0; pointer-events: none; transition: all 0.5s ease-in; } */
+
+/* ================= NOVO DESIGN PREMIUM DO CARTÃO (CLEAN UI) ================= */
+.ficha-dado {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    
+    /* Fundo branco puro e limpo */
+    background: #ffffff;
+    
+    /* Borda ultrafina e cantos generosos estilo mobile */
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 32px;
+    
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    
+    /* Sombra colorida (Glow) usando o roxo do tema para parecer levitar */
+    box-shadow: 0 20px 50px rgba(94, 53, 177, 0.15), 0 5px 15px rgba(0,0,0,0.03); 
+    
+    cursor: grab; text-align: center;
+    padding: 30px 20px; box-sizing: border-box; 
+    transform-origin: 50% 100%; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+    touch-action: none; user-select: none;
+    overflow: hidden; /* Fundamental para conter os efeitos visuais abaixo */
+}
+
+/* Linha de LED/Gradiente Vibrante no topo do cartão */
+.ficha-dado::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 6px;
+    background: linear-gradient(90deg, var(--cor-tema), #00e5ff);
+}
+
+/* Um leve brilho interno na base para profundidade de interface */
+.ficha-dado::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 40%;
+    background: linear-gradient(to top, rgba(94, 53, 177, 0.04) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+/* Textos e Ícones do Cartão Modernizado */
+.card-icone {
+    font-size: 90px;
+    margin-bottom: 15px;
+    line-height: 1;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+    z-index: 2; /* Fica acima dos efeitos de fundo */
+}
+.card-texto {
+    font-size: 24px;
+    font-weight: 900;
+    color: #2c3e50; /* Cinza escuro sofisticado em vez de preto chapado */
+    line-height: 1.2;
+    z-index: 2;
+}
+
+/* Subtexto transformado em uma Pílula/Badge moderna */
+.ficha-dado .subtexto { 
+    font-size: 11px; font-weight: 900; color: #7f8c8d; 
+    margin-top: 25px; text-transform: uppercase; letter-spacing: 1.5px;
+    background: #f1f2f6; padding: 8px 18px; border-radius: 30px;
+    z-index: 2;
+}
+
+/* Mantendo os estados de movimento */
+.ficha-dado.dragging {
+    transition: none; cursor: grabbing; box-shadow: 0 25px 60px rgba(94, 53, 177, 0.25);
+}
+.ficha-dado.anim-right { transform: translateX(150%) rotate(30deg) !important; opacity: 0; pointer-events: none; transition: all 0.5s ease-in; }
+.ficha-dado.anim-left { transform: translateX(-150%) rotate(-30deg) !important; opacity: 0; pointer-events: none; transition: all 0.5s ease-in; }
+
+/* Indicadores Visuais Laterais */
+.indicador-acao {
+    position: absolute; top: 50%; transform: translateY(-50%); font-size: 24px; font-weight: 900;
+    padding: 15px 20px; border-radius: 15px; opacity: 0; transition: opacity 0.2s; pointer-events: none;
+    text-transform: uppercase; z-index: 50; display: flex; align-items: center; gap: 10px;
+}
+.indicador-acao.left { left: -100px; color: var(--cor-erro); border: 4px solid var(--cor-erro); background: #ffebee;}
+.indicador-acao.right { right: -100px; color: var(--cor-sucesso); border: 4px solid var(--cor-sucesso); background: #e8f5e9;}
+
+/* Botões Manuais na base */
+.controles-manuais {
+    display: flex; gap: 20px; justify-content: center; width: 100%; max-width: 400px; z-index: 100;
+}
+.btn-swipe {
+    flex: 1; padding: 15px; font-size: 16px; font-weight: 900; text-transform: uppercase;
+    border-radius: 15px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.1s; box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+}
+.btn-descartar { background: white; color: var(--cor-erro); border: 3px solid var(--cor-erro); }
+.btn-descartar:active { transform: translateY(5px); box-shadow: none; background: #ffebee;}
+.btn-aprovar { background: white; color: var(--cor-sucesso); border: 3px solid var(--cor-sucesso); }
+.btn-aprovar:active { transform: translateY(5px); box-shadow: none; background: #e8f5e9;}
+
+/* Efeitos Overlay de Feedback no Cartão */
+.ficha-dado::after {
+    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 15px; opacity: 0; transition: opacity 0.2s; pointer-events: none;
+}
+.ficha-dado.hover-right::after { background: rgba(76, 175, 80, 0.2); opacity: 1; }
+.ficha-dado.hover-left::after { background: rgba(244, 67, 54, 0.2); opacity: 1; }
+
+/* ================= ZONA DE ALERTAS PADRÃO OURO ================= */
+.zona-alertas { position: relative; width: 100%; height: 0; z-index: 200; pointer-events: none; }
+#toast-feedback {
+    position: fixed;
+    bottom: 25px; /* <--- Abaixado de 100px para 25px (área do botão Sair) */
+    left: 50%; transform: translate(-50%, 50px);
+    width: max-content; max-width: 90%; background: white; border-radius: 15px; padding: 12px 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; font-size: 16px; font-weight: 500; color: #111;
+    opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-left: 8px solid transparent; pointer-events: none;
+}
+#toast-feedback.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; cursor: pointer; }
+#toast-feedback h3 { margin: 0 0 3px 0; font-size: 16px; text-transform: uppercase; }
+#toast-feedback.sucesso { border-left-color: #4caf50; }
+#toast-feedback.sucesso h3 { color: #2e7d32; }
+#toast-feedback.erro { border-left-color: #f44336; }
+#toast-feedback.erro h3 { color: #c62828; }
+
+#alerta-combo {
+    position: fixed; 
+    bottom: 95px; /* <--- Abaixado de 170px para 95px */
+    left: 50%; transform: translate(-50%, 50px);
+    background: #ff9800; color: white; padding: 10px 20px; border-radius: 30px; 
+    font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; 
+    transition: all 0.3s; width: max-content; max-width: 90%; text-align: center; pointer-events: none;
+}
+#alerta-combo.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; cursor: pointer; }
+
+/* ================= NOVOS ESTILOS PARA OS CARTÕES ILUSTRATIVOS ================= */
+.card-icone {
+    font-size: 85px; /* Ícone gigante */
+    margin-bottom: 10px;
+    line-height: 1;
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,0.15));
+}
+.card-texto {
+    font-size: 26px;
+    font-weight: 900;
+    color: #111;
+    line-height: 1.2;
+}
+
+/* ================= ANIMAÇÃO DO TUTORIAL ================= */
+#tela-tutorial { pointer-events: none; z-index: 9999; background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;}
+.tutorial-animacao { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 250px; z-index: 1; pointer-events: none; }
+.mao-ghost { font-size: 70px; position: absolute; top: 40px; left: 50%; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); animation: arrastarAnimSwipe 2.5s infinite ease-in-out; }
+
+@keyframes arrastarAnimSwipe {
+    0%   { transform: translate(-50%, 0) scale(1.2); opacity: 0; }
+    15%  { transform: translate(-50%, 0) scale(1.2); opacity: 1; }
+    25%  { transform: translate(-50%, 0) scale(0.9); } 
+    40%  { transform: translate(80px, -20px) scale(0.9); opacity: 1; } 
+    55%  { transform: translate(80px, -20px) scale(1.2); opacity: 0; } 
+    100% { transform: translate(80px, -20px) scale(1.2); opacity: 0; }
+}
+
+/* ================= RESPONSIVIDADE (CELULAR DEITADO) ================= */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .area-jogo { padding-top: 45px; padding-bottom: 5px; gap: 5px;}
+    
+    .deck-area { height: 200px; max-width: 300px; margin-bottom: 5px; }
+
+    /* .ficha-dado { padding: 10px; font-size: 18px; border-width: 3px; }
+    .ficha-dado .subtexto { margin-top: 5px; font-size: 11px;} */
+
+    /* Ajustes específicos para o Novo Design Premium no Celular */
+    .ficha-dado { padding: 15px 10px; border-radius: 20px; }
+    
+    .card-icone {
+        font-size: 50px; /* Reduz o ícone para caber confortavelmente */
+        margin-bottom: 5px;
+    }
+    .card-texto {
+        font-size: 16px; /* Reduz a fonte para evitar quebras excessivas */
+        line-height: 1.1;
+    }
+    .ficha-dado .subtexto { 
+        margin-top: 10px; 
+        font-size: 9px; 
+        padding: 5px 12px;
+    }
+
+    .controles-manuais { gap: 10px; max-width: 300px; }
+    .btn-swipe { padding: 8px; font-size: 12px; border-width: 2px; }
+
+    .indicador-acao { font-size: 16px; padding: 10px; border-width: 2px; }
+    .indicador-acao.left { left: -140px; }
+    .indicador-acao.right { right: -140px; }
+
+    #toast-feedback { bottom: 5px; padding: 6px 12px; font-size: 12px; }
+    #toast-feedback h3 { font-size: 12px; margin-bottom: 2px; }
+    #alerta-combo { bottom: 55px; font-size: 12px; padding: 6px 12px; }
+
+    .tutorial-animacao { height: 120px; }
+    .mao-ghost { font-size: 50px; top: 25px; }
+    @keyframes arrastarAnimSwipe {
+        0%   { transform: translate(-50%, 0) scale(1.2); opacity: 0; }
+        15%  { transform: translate(-50%, 0) scale(1.2); opacity: 1; }
+        25%  { transform: translate(-50%, 0) scale(0.9); }
+        40%  { transform: translate(60px, -10px) scale(0.9); opacity: 1; }
+        55%  { transform: translate(60px, -10px) scale(1.2); opacity: 0; }
+        100% { transform: translate(60px, -10px) scale(1.2); opacity: 0; }
+    }
+}

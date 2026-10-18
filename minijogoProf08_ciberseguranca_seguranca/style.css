@@ -1,0 +1,234 @@
+/* ================= VARIÁVEIS DE TEMA ESPECÍFICAS ================= */
+:root {
+    --cor-tema: #512da8;       /* Roxo */
+    --cor-tema-escuro: #311b92;/* Roxo Escuro */
+    --cor-tema-claro: #ede7f6; /* Roxo Muito Claro */
+}
+
+/* .hud-btn.desativado {
+    filter: grayscale(100%);
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+} */
+
+body::before {
+    content: "🛡️💻"; position: absolute; font-size: 250px; opacity: 0.05; z-index: -1;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); letter-spacing: -20px;
+
+    /* NOVO: Impede quebra de linha em telas pequenas */
+    white-space: nowrap;
+}
+
+/* ================= ÁREA DE JOGO ================= */
+
+.wrapper-auditoria {
+    position: relative;
+    width: 95%; 
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.painel-auditoria {
+    background: #ffffff; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+    border-left: 8px solid var(--cor-tema); 
+    width: 100%;
+    display: flex; flex-direction: column; 
+    height: 540px; 
+    overflow: hidden; z-index: 10;
+}
+
+.cartao-contexto {
+    padding: 15px 20px; text-align: left; background: var(--cor-tema-claro);
+    font-size: 18px; font-weight: bold; color: var(--cor-tema-escuro); border-bottom: 2px solid #d1c4e9;
+    flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+}
+.cartao-contexto span { display: block; font-size: 13px; font-weight: normal; color: var(--cor-tema); text-transform: uppercase; margin-bottom: 5px; }
+
+.contador-tabelas {
+    font-size: 16px; font-weight: bold; color: white; background: var(--cor-tema); padding: 5px 15px; border-radius: 20px;
+}
+
+.lista-dados {
+    flex: 1; padding: 25px; display: flex; flex-direction: column; gap: 20px;
+    overflow: hidden; justify-content: space-between;
+}
+
+.texto-solicitacao {
+    height: 80px; 
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 800; color: white; background: var(--cor-tema-escuro); 
+    padding: 0 25px; border-radius: 10px; text-align: center;
+    box-shadow: inset 0 0 0 4px var(--cor-tema), 0 5px 15px rgba(0,0,0,0.2);
+    margin: 0; text-transform: uppercase; letter-spacing: 1px; line-height: 1.3;
+}
+
+.opcoes-container {
+    display: flex; flex-direction: column; gap: 15px; flex: 1; justify-content: flex-start;
+}
+
+.btn-opcao {
+    height: 85px; 
+    background: white; border: 3px solid #e0e0e0;
+    padding: 0 20px; border-radius: 15px; font-size: 16px; font-weight: bold;
+    color: #333; cursor: pointer; text-align: center; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 15px; box-shadow: 0 4px 0 #e0e0e0;
+}
+.btn-opcao:hover { border-color: var(--cor-tema); box-shadow: 0 4px 0 var(--cor-tema); transform: translateY(-2px); }
+.btn-opcao:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+
+.btn-opcao.certo { background: #e8f5e9 !important; border-color: #4caf50 !important; box-shadow: 0 4px 0 #4caf50 !important; color: #1b5e20 !important; }
+.btn-opcao.errado { background: #ffebee !important; border-color: #f44336 !important; box-shadow: 0 4px 0 #f44336 !important; color: #b71c1c !important; }
+
+.btn-opcao.certo-sugerido { animation: piscarCerto 1.2s infinite; }
+@keyframes piscarCerto {
+    0%, 100% { border-color: #e0e0e0; box-shadow: 0 4px 0 #e0e0e0; }
+    50% { border-color: #4caf50; box-shadow: 0 4px 0 #4caf50; background: #e8f5e9; }
+}
+
+/* ================= CONTROLES FLUTUANTES (MODO ESTUDO) ================= */
+.controles-estudo {
+    position: absolute;
+    bottom: -65px; 
+    right: 0;      
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 300px;
+    min-height: 50px;
+    z-index: 20;
+}
+
+.estudo-label {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: inline-block;
+}
+.estudo-label input { display: none; }
+.estudo-icone {
+    font-size: 26px; background: white; border: 3px solid #ccc; border-radius: 50%;
+    width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: all 0.2s ease; filter: grayscale(100%);
+}
+.estudo-label:hover .estudo-icone { transform: scale(1.1); }
+.estudo-label input:checked ~ .estudo-icone {
+    filter: grayscale(0%); border-color: #4caf50; box-shadow: 0 0 12px rgba(76, 175, 80, 0.6);
+}
+
+.btn-acao-flutuante {
+    background: var(--cor-tema-escuro); color: white; border: none; border-radius: 30px;
+    padding: 12px 25px; font-size: 16px; font-weight: bold; cursor: pointer; 
+    margin-right: 72px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: all 0.2s; white-space: nowrap;
+}
+.btn-acao-flutuante:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+.btn-acao-flutuante:active { transform: translateY(1px); box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
+
+/* ================= IMUNIDADE PARA OS CONTROLES DE ESTUDO ================= */
+/* Garante que o livro e o botão funcionem mesmo durante a transição (.bloqueado), 
+   MAS congelem completamente se o jogo for pausado */
+.area-jogo.bloqueado:not(.pausado) .controles-estudo,
+.area-jogo.bloqueado:not(.pausado) .controles-estudo * {
+    pointer-events: auto !important;
+}
+
+/* ================= RESPONSIVIDADE CELULAR (RETRATO/GERAL) ================= */
+@media screen and (max-width: 768px) {
+    .wrapper-auditoria {
+        width: 100%;
+    }
+
+    /* Remove o espaço branco: o painel passa a fechar na altura do conteúdo. */
+    .painel-auditoria {
+        height: auto;
+    }
+
+    .lista-dados {
+        flex: none;
+        justify-content: flex-start;
+        overflow: visible;
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .texto-solicitacao {
+        height: auto;
+        min-height: 64px;
+        padding: 10px 14px;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+    }
+
+    .opcoes-container {
+        flex: none;
+        gap: 10px;
+    }
+
+    .btn-opcao {
+        height: auto;
+        min-height: 64px;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    /* Mantém o livro fixo mesmo quando o botão "Próxima" aparece/some. */
+    .controles-estudo {
+        bottom: -58px;
+        right: 0;
+        width: min(290px, calc(100% - 8px));
+        min-height: 50px;
+    }
+
+    .estudo-label {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .btn-acao-flutuante {
+        margin-right: 72px;
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+}
+
+/* ================= RESPONSIVIDADE ================= */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .painel-auditoria {
+        height: auto;
+        transform: translateY(-50px);
+        border-left-width: 6px;
+    }
+    .cartao-contexto { padding: 10px 15px; font-size: 15px; }
+    .lista-dados { padding: 15px; gap: 10px;}
+    .texto-solicitacao { height: 60px; font-size: 14px; padding: 0 15px;}
+    .opcoes-container { gap: 8px; }
+    .btn-opcao { height: 65px; padding: 0 15px; font-size: 13px; border-width: 2px;}
+    
+    /* Em mobile deitado mantemos o livro fixo e o botão ao lado esquerdo dele. */
+    .controles-estudo { 
+        bottom: -20px;
+        right: 10px;
+        width: min(280px, calc(100% - 20px));
+        min-height: 50px;
+        flex-direction: row;
+        align-items: center;
+    }
+    .estudo-label {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .btn-acao-flutuante {
+        margin-right: 72px;
+    }
+
+    .zona-alertas-local {
+        position: fixed; bottom: -15px;
+    }
+}

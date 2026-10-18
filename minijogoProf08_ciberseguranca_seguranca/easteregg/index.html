@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fase 8 - Segurança (Tower Defense Action)</title>
+
+    <link rel="stylesheet" href="../../minijogos.css">
+    <link rel="stylesheet" href="../../acessibilidade.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <canvas id="game-canvas"></canvas>
+
+    <button class="btn-voltar" onclick="Engine.cancelar()">&#8592; Sair</button>
+
+    <div class="hud">
+        <div class="hud-grupo">
+            <div class="hud-item" id="hud-tempo">⏳ 120s</div>
+            <div class="hud-item hud-btn" id="btn-pausa" onclick="Engine.togglePausa()">⏸️</div>
+            <div class="hud-item hud-btn" id="btn-mute" onclick="AudioSys.toggleMute()">🔊</div>
+        </div>
+        <div class="hud-item" id="hud-pontos-container">⭐ <span id="hud-pontos">0</span></div>
+    </div>
+
+    <!-- TELA DE INTRODUÇÃO -->
+    <div class="overlay" id="tela-intro">
+        <div class="painel-central">
+            <h2 id="txt-intro-titulo"></h2>
+            <p id="txt-intro-desc" style="color: #553838; font-weight: bold;"></p>
+            
+            <!-- <div class="defin-wrapper"> -->
+            <div class="defin-wrapper oculto">
+                <div id="txt-intro-defin" onclick="this.classList.toggle('expandido')">
+                    <span id="render-defin-curta" class="texto-curto"></span>
+                    <span id="render-defin-longa" class="texto-longo"></span>
+                </div>
+            </div>
+
+            <div class="tutorial-btn">
+                <button class="btn-acao btn-terciario" onclick="Engine.abrirTutorial()">💡 Como Jogar</button>
+            </div>
+
+            <p id="txt-intro-dica"></p>
+            <p id="txt-intro-meta" style="color: #d32f2f; font-weight: bold;"></p>
+            
+            <!-- ADICIONE ESTE BLOCO AQUI -->
+            <div class="opcoes-dificuldade">
+                <a href="../index.html" class="easteregg-label" title="Modo Normal: Auditoria de Segurança">
+                    <span>🕹️</span>
+                </a>
+                <label class="switch-container">
+                    <div class="switch-textos">
+                        <span>Modo Rápido</span>
+                        <small>(Maior dificuldade)</small>
+                    </div>
+                    <input type="checkbox" id="toggle-dificuldade">
+                    <span class="slider"></span>
+                </label>
+                <label class="assistencia-label" title="Tempo Extra (+50% tempo)">
+                    <input type="checkbox" id="check-tempo-extra">
+                    <span class="assistencia-icone">+⏱️</span>
+                </label>
+            </div>
+            <!-- FIM DO BLOCO -->
+            
+            <div class="botoes-coluna">
+                <!-- <button class="btn-acao" onclick="Engine.iniciar()">Iniciar Segurança</button> -->
+                <button class="btn-acao" onclick="Engine.iniciar()">Iniciar</button>
+                <!-- <button class="btn-acao btn-terciario" onclick="Engine.abrirTutorial()">💡 Como Jogar</button> -->
+                <button class="btn-acao btn-secundario" onclick="Engine.cancelar()">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay oculto" id="tela-tutorial">
+        <div class="painel-central" style="max-width: 700px; padding: 20px;">
+            <h2 style="margin-bottom: 0;">Como Jogar</h2>
+            
+            <div class="tutorial-slide" id="tut-slide-1">
+                <div class="tutorial-slide-content">
+                    <div class="tut-container">
+                        <div class="t1-player">🛡️</div>
+                        <div class="t1-joy-base"></div>
+                        <div class="t1-joy-stick"></div>
+                        <div class="t1-hand">👆</div>
+                    </div>
+                    <div class="tutorial-text">
+                        <h3 style="margin: 0 0 5px 0; color: var(--cor-tema-escuro);">1. Movimentação Livre</h3>
+                        <p><strong>Toque em qualquer lugar vazio</strong> da tela e arraste para criar um joystick. O Defensor 🛡️ seguirá a direção do seu dedo.</p>
+                        <p style="color: #d32f2f;"><em>Dica: Toque afastado do defensor para não cobrir sua visão!</em></p>
+                    </div>
+                </div>
+                <!-- <div class="botoes-coluna"> -->
+                <div style="display: flex; gap: 10px; margin-top: 10px; justify-content: center;">
+                    <button class="btn-acao btn-secundario" onclick="Engine.fecharTutorial()" style="width: auto;">⬅️ Voltar</button>
+                    <button class="btn-acao" onclick="Engine.mudarSlideTutorial(2)" style="width: auto; flex-grow: 1;">Próximo ➡️</button>
+                </div>
+            </div>
+
+            <div class="tutorial-slide oculto" id="tut-slide-2">
+                <div class="tutorial-slide-content">
+                    <div class="tut-container">
+                        <div class="t2-slot-box">
+                            <div class="t2-slot-t1">⭕ BLOCO</div>
+                            <div class="t2-slot-t2"><span class="t2-vazio">0/10 💠</span><span class="t2-cheio">3/10 💠</span></div>
+                        </div>
+                        <div class="t2-player">🛡️</div>
+                        <div class="t2-tiro-fx"></div>
+                        <div class="t2-tiro2-fx"></div>
+                        <img id="img-tut-hacker" class="t2-hacker" src="">
+                        <div class="t2-life"><div class="t2-life-fill"></div></div>
+                        <div class="t2-coin t2-c1">💠</div> <div class="t2-coin t2-c2">💠</div> <div class="t2-coin t2-c3">💠</div>
+                    </div>
+                    <div class="tutorial-text">
+                        <h3 style="margin: 0 0 5px 0; color: var(--cor-tema-escuro);">2. Defesa e Coleta</h3>
+                        <p>Aproxime-se dos hackers para atirar automaticamente. Ao serem derrotados, eles liberam moedas 💠.</p>
+                        <p>Colete-as e deposite-as em um <strong>BLOCO</strong> (área pontilhada).</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px; justify-content: center;">
+                    <button class="btn-acao btn-secundario" onclick="Engine.mudarSlideTutorial(1)" style="width: auto;">⬅️ Voltar</button>
+                    <button class="btn-acao" onclick="Engine.mudarSlideTutorial(3)" style="width: auto; flex-grow: 1;">Próximo ➡️</button>
+                </div>
+            </div>
+
+            <div class="tutorial-slide oculto" id="tut-slide-3">
+                <div class="tutorial-slide-content">
+                    <div class="tut-container">
+                        <div class="t3-slot"><div class="t3-slot-t1">⭕ BLOCO</div><div class="t3-slot-t2">9/10 💠</div></div>
+                        
+                        <div class="t3-tower-container">
+                            <div class="t3-tower-ring"></div>
+                            <div class="t3-tower-emoji">📡</div>
+                            <div class="t3-tower-lvl">LVL 1</div>
+                        </div>
+
+                        <div class="t3-player">🛡️</div>
+                        <div class="t3-quiz">Auditoria de Segurança
+                            <div class="t3-btn-w">Conduta Incorreta ❌</div>
+                            <div class="t3-btn-q">Conduta Correta ✅</div>
+                            <div class="t3-btn-w">Conduta Incorreta ❌</div>
+                        </div>
+                        <div class="t3-hand">👆</div>
+                    </div>
+                    <div class="tutorial-text">
+                        <h3 style="margin: 0 0 5px 0; color: var(--cor-tema-escuro);">3. Auditoria e Firewall</h3>
+                        <p>A cada 10 moedas depositadas em um BLOCO, um quiz se abre. Responda corretamente ao quiz sobre segurança para instalar ou melhorar suas defesas 📡 (até Lvl 3)!</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px; justify-content: center;">
+                    <button class="btn-acao btn-secundario" onclick="Engine.mudarSlideTutorial(2)" style="width: auto;">⬅️ Voltar</button>
+                    <button class="btn-acao" onclick="Engine.fecharTutorial()" style="width: auto; flex-grow: 1;">Entendi, Jogar!</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TELA DE AUDITORIA (SLOT) -->
+    <div class="overlay oculto" id="tela-quiz">
+        <div class="painel-central">
+            <h2 id="txt-quiz-titulo"></h2>
+            <p id="txt-quiz-desc"></p>
+            <div class="opcoes-quiz" id="quiz-container"></div>
+        </div>
+    </div>
+
+    <!-- TELA DE FIM -->
+    <div class="overlay oculto" id="tela-fim">
+        <div class="painel-central">
+            <h2 id="txt-fim-titulo">Fim</h2>
+            <p id="txt-fim-msg"></p>
+            <div class="texto-legal" id="txt-fim-lei"></div>
+            
+            <div class="estatisticas-fim">
+                <div class="stats-row">
+                    <div>Hackers Parados:<span id="final-qtde" style="color: #424242;">0</span></div>
+                    <div>Tempo Restante:<span id="final-tempo" style="color: var(--cor-tema-escuro);">0s</span></div>
+                    <div>Integridade (BD):<span id="final-taxa">0%</span></div>
+                </div>
+                <div class="score-destaque">
+                    Pontuação Final
+                    <span id="final-pontos">0</span>
+                </div>
+            </div>
+
+            <div class="botoes-coluna" id="botoes-fim"></div>
+        </div>
+    </div>
+
+    <div class="overlay oculto" id="tela-pausa">
+        <div class="painel-central" style="position: relative; min-height: 200px;">
+            <button onclick="Engine.esconderOverlayPausa()" 
+                style="position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 28px; cursor: pointer; color: #666;" title="Ocultar Painel">
+                👁️
+            </button>
+
+            <h1 style="font-size: 40px; color: var(--cor-tema-escuro); margin: 0;">PAUSADO</h1>
+            <p style="color: #201e1e; margin-top: 10px;">O cronômetro e os alertas estão congelados.</p>
+            
+            <div class="botoes-coluna" style="margin-top: 20px;">
+                <button class="btn-acao" onclick="Engine.togglePausa()">▶️ Retomar Jogo</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.iniciar()">🔄 Reiniciar Fase</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.voltarAoMenu()">⏪ Introdução</button>
+            </div>
+
+            <p style="color: #201e1e; font-size: 12px; margin-top: 15px;">Dica: Clique no 👁️ acima para ocultar o painel sem despausar.</p>
+        </div>
+    </div>
+
+    <script src="../../minijogos.js"></script>
+    <script src="../../acessibilidade.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>

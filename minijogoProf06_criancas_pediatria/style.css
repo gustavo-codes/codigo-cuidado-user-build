@@ -1,0 +1,141 @@
+/* ================= VARIÁVEIS DE TEMA DINÂMICAS ================= */
+:root {
+    --cor-tema: #e91e63;       /* Rosa/Magenta */
+    --cor-tema-escuro: #c2185b;/* Magenta Escuro */
+    --cor-tema-claro: #fce4ec; /* Rosa Muito Claro */
+}
+
+body::before {
+    content: "🧸🧒"; position: absolute; font-size: 250px; opacity: 0.05; z-index: -1;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); letter-spacing: -20px;
+
+    /* NOVO: Impede quebra de linha em telas pequenas */
+    white-space: nowrap;
+}
+
+/* ================= ÁREA DE JOGO ================= */
+.area-jogo {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; max-width: 900px; height: 100%; 
+    padding-top: 75px; padding-bottom: 20px; 
+    box-sizing: border-box; position: relative; gap: 15px;
+}
+
+.contador-tabelas { 
+    font-size: 16px; font-weight: bold; color: white; background: var(--cor-tema-escuro); 
+    padding: 5px 15px; border-radius: 20px;
+    margin: 0 auto; /* NOVO: Força a centralização na coluna */
+    max-width: 300px; /* NOVO: Impede que o texto longo do alerta altere a largura do contador */
+}
+
+/* Cartão do Paciente Pediátrico */
+.cartao-paciente {
+    background: #ffffff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border-top: 10px solid var(--cor-tema); width: 100%; max-width: 500px;
+    display: flex; flex-direction: column; padding: 25px; box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    /* NOVO: Margens laterais 'auto' garantem o centro, e a 'bottom: auto' empurra o alerta para baixo */
+    margin-left: auto; 
+    margin-right: auto; 
+    margin-bottom: auto;
+}
+.cartao-paciente.anim-saida { transform: scale(0.8) translateY(-50px); opacity: 0; pointer-events: none;}
+.cartao-paciente.tremor { animation: shakeError 0.4s ease-in-out; border-top-color: #d32f2f;}
+@keyframes shakeError { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
+
+.paciente-header { display: flex; align-items: center; gap: 15px; border-bottom: 2px dashed #eee; padding-bottom: 15px; margin-bottom: 15px;}
+.paciente-icone { font-size: 50px; background: var(--cor-tema-claro); width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid var(--cor-tema);}
+.paciente-nome { font-size: 24px; font-weight: bold; color: #333; margin: 0;}
+.paciente-idade { font-size: 14px; color: var(--cor-tema-escuro); text-transform: uppercase; font-weight: bold;}
+
+.paciente-body { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; gap: 10px;}
+.paciente-body span { font-size: 13px; color: #757575; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+.paciente-situacao { font-size: 20px; font-weight: 500; color: #212121; line-height: 1.4; background: #f5f5f5; padding: 15px; border-radius: 10px;}
+
+/* Botões de Ação (3 opções) */
+.controles-decisao {
+    display: flex; gap: 15px; width: 95%; max-width: 600px; justify-content: center; flex-wrap: wrap; z-index: 60;
+}
+.btn-decisao {
+    flex: 1; min-width: 150px; padding: 15px 10px; border-radius: 15px; font-size: 16px; font-weight: bold;
+    color: white; cursor: pointer; border: none; text-transform: uppercase;
+    box-shadow: 0 6px 0px rgba(0,0,0,0.2); transition: all 0.1s;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+}
+.btn-decisao:active { transform: translateY(6px); box-shadow: 0 0px 0px rgba(0,0,0,0.2); }
+
+.btn-responsavel { background: var(--cor-tema); box-shadow: 0 6px 0px var(--cor-tema-escuro); } 
+.btn-urgencia { background: #d32f2f; box-shadow: 0 6px 0px #b71c1c; }
+/* .btn-inadequado { background: #757575; box-shadow: 0 6px 0px #424242; } */
+
+.icone-btn { font-size: 28px; line-height: 1; }
+
+/* ================= ALERTAS (TOASTS) CLICÁVEIS ================= */
+/* .zona-alertas-local {
+    position: absolute;
+    bottom: 120px;
+    left: 50%; transform: translateX(-50%); width: 100%;
+    display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; z-index: 100;
+} */
+.zona-alertas-local {
+    position: relative; /* Não flutua mais no notebook, respeita o espaço */
+    width: 70%;
+    /* max-width: 500px; NOVO: Impede que o texto longo estique a coluna toda */
+    margin: 20px auto 0 auto; /* NOVO: Centraliza a própria área do alerta */
+    display: flex; flex-direction: column; align-items: center; gap: 10px; 
+    pointer-events: none; z-index: 100;
+    /* margin-top: 20px; Descola do cartão do paciente */
+    min-height: 100px; /* Segura o espaço para a tela não "pular" quando o alerta aparece */
+}
+
+#toast-feedback {
+    position: relative; width: max-content; max-width: 90%; background: white; 
+    border-radius: 15px; padding: 12px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); text-align: center;
+    font-size: 15px; font-weight: 500; opacity: 0; color: #111;
+    transform: translateY(20px); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-left: 8px solid transparent;
+    pointer-events: none; /* Invisível = não bloqueia cliques */
+}
+
+#toast-feedback.show { 
+    transform: translateY(0); opacity: 1; 
+    pointer-events: auto; cursor: pointer; /* PADRÃO OURO: Toast Clicável */
+}
+
+#toast-feedback h3 { margin: 0 0 3px 0; font-size: 15px; text-transform: uppercase; }
+
+#toast-feedback.sucesso { border-left-color: #4caf50; }
+#toast-feedback.sucesso h3 { color: #2e7d32; }
+#toast-feedback.erro { border-left-color: #f44336; }
+#toast-feedback.erro h3 { color: #c62828; }
+
+/* ================= RESPONSIVIDADE (CELULAR DEITADO) ================= */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .area-jogo { padding-top: 45px; padding-bottom: 5px; gap: 10px; flex-direction: row; align-items: stretch; justify-content: center;}
+    
+    /* Colunas: 60% Esquerda (Cartão) / 40% Direita (Botões) */
+    .coluna-esquerda { flex: 1.4; height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 5px; align-items: center;}
+    .coluna-direita { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: center;}
+
+    .contador-tabelas { font-size: 11px; padding: 3px 8px;}
+
+    .cartao-paciente { padding: 15px; border-top-width: 6px; margin: 0; max-height: 85vh; overflow-y: auto;}
+    .paciente-header { padding-bottom: 10px; margin-bottom: 10px; gap: 10px;}
+    .paciente-icone { font-size: 35px; width: 50px; height: 50px; }
+    .paciente-nome { font-size: 18px; }
+    .paciente-idade { font-size: 12px; }
+    .paciente-body span { font-size: 11px; }
+    .paciente-situacao { font-size: 14px; padding: 10px; }
+
+    .controles-decisao { flex-direction: column; width: 100%; gap: 10px; }
+    .btn-decisao { padding: 10px; font-size: 14px; min-width: 0; flex-direction: row; box-shadow: 0 4px 0px rgba(0,0,0,0.2);}
+    .btn-decisao:active { transform: translateY(4px); }
+    .icone-btn { font-size: 20px; }
+
+    /* .zona-alertas-local { bottom: 10px; } */
+    /* O position: fixed tira o alerta de dentro da coluna e trava na tela do celular */
+    .zona-alertas-local { position: fixed; bottom: -20px; top: auto; left: 50%; transform: translateX(-50%); width: 70%; margin-top: 0; z-index: 100; }
+    #toast-feedback { font-size: 12px; padding: 6px 12px; border-radius: 10px; max-width: 95%;}
+    #toast-feedback h3 { font-size: 12px; margin-bottom: 2px; }
+}

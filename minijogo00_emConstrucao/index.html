@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, touch-action: none">
+    <title>Em Construção - Código Cuidado</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../acessibilidade.css">
+
+    <style>
+        /* ================= VARIÁVEIS DO GUIA IDV ================= */
+        :root {
+            --idv-dark-blue: #004357;
+            --idv-light-blue: #00ACDE;
+            --idv-pale-blue: #B9EFFF;
+            --idv-mint: #E0FFF0;
+            --idv-white: #F1FFF8;
+            --fonte-texto: 'Roboto', sans-serif;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100dvh;
+            font-family: var(--fonte-texto);
+            background-color: rgba(0, 67, 87, 0.85); /* Fundo escuro semi-transparente para focar no cartão */
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+
+        /* ================= CARTÃO PRINCIPAL ================= */
+        .container-card {
+            background: var(--idv-white);
+            border: 4px solid var(--idv-light-blue);
+            padding: 40px 50px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .icone-aviso {
+            font-size: 60px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        h1 {
+            margin: 0 0 15px 0;
+            color: var(--idv-dark-blue);
+            font-weight: 900;
+            font-size: 28px;
+            text-transform: uppercase;
+        }
+
+        p {
+            font-size: 16px;
+            color: #444;
+            font-weight: 700;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        /* ================= BOTÕES ================= */
+        .botoes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            border-radius: 30px; font-weight: 900; cursor: pointer; text-transform: uppercase; 
+            transition: transform 0.05s linear, box-shadow 0.05s linear; 
+            text-align: center; border: 3px solid var(--idv-dark-blue);
+            font-family: var(--fonte-texto); padding: 15px 20px; font-size: 16px;
+        }
+
+        /* Botão Primário (Concluir e Desbloquear a próxima fase) */
+        .btn-primario {
+            background: var(--idv-light-blue); color: var(--idv-white);
+            box-shadow: 0 5px 0 var(--idv-dark-blue); 
+        }
+        .btn-primario:hover { background: #0093be; }
+        .btn-primario:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+
+        /* Botão Secundário (Apenas voltar) */
+        .btn-secundario {
+            background: var(--idv-white); color: var(--idv-dark-blue);
+            box-shadow: 0 5px 0 var(--idv-dark-blue); 
+        }
+        .btn-secundario:hover { background: var(--idv-pale-blue); }
+        .btn-secundario:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container-card">
+        <span class="icone-aviso">🚧</span>
+        <h1>Em Breve</h1>
+        <p>Este minijogo ainda está sendo preparado pela equipe do <strong>PET-Saúde Digital</strong>.<br>Volte em breve!</p>
+        
+        <div class="botoes-container">
+            <button class="btn btn-primario" onclick="simularVitoria()">✅ Simular Conclusão</button>
+            <button class="btn btn-secundario" onclick="voltarParaUnity()">⏪ Apenas Voltar</button>
+        </div>
+    </div>
+
+    <script>
+        // Função para "enganar" o hub e dizer que o jogador venceu a fase
+        function simularVitoria() {
+            if (window.parent && window.parent.AvisarVitoria) {
+                // Passamos um objeto falso com pontuação e precisão máxima
+                // para que o card no hub2d fique verde e destrave o próximo!
+                window.parent.AvisarVitoria({
+                    pontuacao: 100,
+                    tempoRestante: 0,
+                    precisao: 100
+                });
+            } else {
+                alert("Simulação: Fase Concluída com sucesso!");
+            }
+        }
+
+        // Função original de apenas cancelar/fechar o iframe
+        function voltarParaUnity() {
+            if (window.parent && window.parent.AvisarCancelamento) {
+                window.parent.AvisarCancelamento();
+            } else {
+                alert("Simulação: Voltando para o menu anterior...");
+            }
+        }
+    </script>
+
+    <script src="../acessibilidade.js"></script>
+
+</body>
+</html>

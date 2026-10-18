@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, touch-action: none">
+    <title>Fase 8 - Auditoria de Segurança</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="stylesheet" href="../minijogos.css">
+    <link rel="stylesheet" href="../acessibilidade.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <button class="btn-voltar" onclick="Engine.cancelar()">&#8592; Sair</button>
+
+    <div class="hud">
+        <div class="hud-grupo">
+            <div class="hud-item" id="hud-tempo">⏳ 60s</div>
+            <div class="hud-item hud-btn" id="btn-pausa" onclick="Engine.togglePausa()">⏸️</div>
+            <div class="hud-item hud-btn" id="btn-mute" onclick="AudioSys.toggleMute()">🔊</div>
+        </div>
+        <div class="hud-item" id="hud-pontos-container">⭐ <span id="hud-pontos">0</span></div>
+    </div>
+
+    <div class="overlay" id="tela-intro">
+        <div class="painel-central">
+            <h2 id="txt-intro-titulo">Fase 8: Auditoria</h2>
+            <p id="txt-intro-desc"></p>
+            
+            <div class="defin-wrapper">
+                <div id="txt-intro-defin" onclick="this.classList.toggle('expandido')">
+                    <span id="render-defin-curta" class="texto-curto"></span>
+                    <span id="render-defin-longa" class="texto-longo"></span>
+                </div>
+            </div>
+
+            <p id="txt-intro-dica"></p>
+            <p id="txt-intro-meta" style="color: #d32f2f; font-weight: bold;"></p>
+
+            <div class="opcoes-dificuldade">
+                <!-- <a href="easteregg/index.html" class="link-secreto" title="Acesso Restrito: Terminal de Defesa">🕹️</a> -->
+                <!-- <a href="easteregg/index.html" class="easteregg-label" title="Modo Especial: Tower Defense da Segurança"> -->
+                <a href="#" onclick="Engine.descobrirSegredo(event)" class="easteregg-label" title="Modo Especial: Tower Defense da Segurança">
+                    <span>🕹️</span>
+                </a>
+                <label class="switch-container">
+                    <div class="switch-textos">
+                        <span>Modo Aleatório</span>
+                        <small>(Embaralhar Opções)</small>
+                    </div>
+                    <input type="checkbox" id="toggle-dificuldade" checked>
+                    <span class="slider"></span>
+                </label>
+                <label class="assistencia-label" title="Tempo Extra (+50% tempo)">
+                    <input type="checkbox" id="check-tempo-extra">
+                    <span class="assistencia-icone">+⏱️</span>
+                </label>
+            </div>
+
+            <div class="botoes-coluna">
+                <!-- <button class="btn-acao" onclick="Engine.iniciar()">Iniciar Auditoria</button> -->
+                <button class="btn-acao" onclick="Engine.iniciar()">Iniciar</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.cancelar()">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay oculto" id="tela-fim">
+        <div class="painel-central">
+            <h2 id="txt-fim-titulo">Fim</h2>
+            <p id="txt-fim-msg"></p>
+            <div class="texto-legal" id="txt-fim-lei"></div>
+            
+            <div class="estatisticas-fim">
+                <div class="stats-row">
+                    <div>Auditorias:<span id="final-qtde" style="color: #424242;">0/0</span></div>
+                    <div>Tempo Restante:<span id="final-tempo" style="color: var(--cor-tema-escuro);">0s</span></div>
+                    <div>Precisão:<span id="final-taxa">0%</span></div>
+                </div>
+                <div class="score-destaque">
+                    Pontuação Final
+                    <span id="final-pontos">0</span>
+                </div>
+            </div>
+
+            <div class="botoes-coluna" id="botoes-fim"></div>
+        </div>
+    </div>
+
+    <div class="area-jogo" id="area-jogo" style="display: none;">
+        
+        <div class="wrapper-auditoria">
+            
+            <div class="painel-auditoria">
+                <div class="cartao-contexto">
+                    <div>
+                        <span>Sistema de Auditoria:</span>
+                        <div>Avaliação de Práticas</div>
+                    </div>
+                    <div class="contador-tabelas" id="contador-tickets">1/5</div>
+                </div>
+                
+                <div class="lista-dados">
+                    <div class="texto-solicitacao" id="texto-solicitacao">
+                        Qual destas condutas garante a segurança do sistema?
+                    </div>
+                    
+                    <div class="opcoes-container" id="container-botoes">
+                        </div>
+                </div>
+            </div>
+
+            <div class="controles-estudo">
+                <label class="estudo-label" title="Modo Estudo (Avanço Manual)">
+                    <input type="checkbox" id="check-modo-estudo" onchange="Engine.toggleModoEstudo()">
+                    <span class="estudo-icone">📖</span>
+                </label>
+                <button id="btn-proxima" class="btn-acao-flutuante" onclick="Engine.proximaPergunta()" style="display: none;">Próxima ➔</button>
+            </div>
+
+        </div>
+
+        <div class="zona-alertas-local">
+            <div id="toast-feedback">
+                <h3 id="toast-titulo">Atenção</h3>
+                <span id="toast-texto">Texto.</span>
+            </div>
+            <div id="alerta-combo">⚠️ Queda de conformidade! Risco de vulnerabilidade.</div>
+        </div>
+
+    </div>
+
+    <div class="overlay oculto" id="tela-pausa">
+        <div class="painel-central" style="position: relative; min-height: 200px;">
+            <button onclick="Engine.esconderOverlayPausa()" 
+                style="position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 28px; cursor: pointer; color: #666;" title="Ocultar Painel">
+                👁️
+            </button>
+
+            <h1 style="font-size: 40px; color: var(--cor-tema-escuro); margin: 0;">PAUSADO</h1>
+            <p style="color: #201e1e; margin-top: 10px;">O cronômetro e os alertas estão congelados.</p>
+            
+            <div class="botoes-coluna" style="margin-top: 20px;">
+                <button class="btn-acao" onclick="Engine.togglePausa()">▶️ Retomar Jogo</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.iniciar()">🔄 Reiniciar Fase</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.voltarAoMenu()">⏪ Introdução</button>
+            </div>
+
+            <p style="color: #201e1e; font-size: 12px; margin-top: 15px;">Dica: Clique no 👁️ acima para ocultar o painel sem despausar.</p>
+        </div>
+    </div>
+
+    <script src="../minijogos.js"></script>
+    <script src="../acessibilidade.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>

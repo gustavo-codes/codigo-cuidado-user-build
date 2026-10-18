@@ -1,0 +1,21 @@
+{
+  "name": "Código Cuidado",
+  "short_name": "Código Cuidado",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "TemplateData/meususdigital.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "TemplateData/favicon.ico",
+      "sizes": "256x256",
+      "type": "image/x-icon"
+    }
+  ]
+}

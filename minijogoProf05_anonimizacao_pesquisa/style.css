@@ -1,0 +1,187 @@
+/* ================= VARIÁVEIS DE TEMA DINÂMICAS ================= */
+:root {
+    --cor-tema: #512da8;
+    --cor-tema-escuro: #311b92;
+    --cor-tema-claro: #ede7f6;
+}
+
+body::before {
+    content: "📊🔬"; position: absolute; font-size: 250px; opacity: 0.04; z-index: -1;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); letter-spacing: -20px;
+
+    /* NOVO: Impede quebra de linha em telas pequenas */
+    white-space: nowrap;
+}
+
+/* ================= ÁREA DE JOGO (TABELA DE PESQUISA) ================= */
+.area-jogo {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    width: 100%; max-width: 900px; height: 100%; 
+    padding-top: 75px; padding-bottom: 110px; 
+    box-sizing: border-box; position: relative; gap: 15px;
+}
+
+.coluna-esquerda { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; min-height: 0; }
+.coluna-direita { width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0;}
+
+.painel-atendimento {
+    background: #ffffff; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+    border-left: 8px solid var(--cor-tema); width: 95%; max-width: 750px;
+    display: flex; flex-direction: column; 
+    height: auto; max-height: 70vh; 
+    overflow: hidden; z-index: 10;
+    transition: all 0.3s;
+}
+.painel-atendimento.tremor { animation: shakeError 0.4s ease-in-out; border-left-color: #d32f2f;}
+@keyframes shakeError {
+    0% { transform: translateX(0); } 25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); }
+}
+
+.cartao-contexto {
+    padding: 15px 20px; text-align: left; background: var(--cor-tema-claro);
+    font-size: 18px; font-weight: bold; color: var(--cor-tema-escuro); border-bottom: 2px solid #d1c4e9;
+    flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+}
+.cartao-contexto span { display: block; font-size: 13px; font-weight: normal; color: var(--cor-tema); text-transform: uppercase; margin-bottom: 5px; }
+.contador-tabelas {
+    font-size: 16px; font-weight: bold; color: white; background: var(--cor-tema); padding: 5px 15px; border-radius: 20px;
+    white-space: nowrap; /* Proíbe o texto de quebrar linha sob qualquer circunstância */
+    /* min-width: 50px;     Garante uma largura mínima segura */
+}
+
+/* ESTRUTURA DE TABELA */
+.tabela-container {
+    display: flex; flex-direction: column; flex: 1; overflow: hidden;
+    margin: 15px; border: 2px solid var(--cor-tema-claro); border-radius: 10px;
+}
+.tabela-header {
+    display: flex; background: var(--cor-tema); color: white; font-weight: bold; 
+    padding: 12px 15px; font-size: 16px; flex-shrink: 0;
+}
+.col-dado { flex: 1; text-align: left; }
+.col-status { width: 130px; text-align: center; }
+
+.tabela-body {
+    overflow-y: auto; display: flex; flex-direction: column; scroll-behavior: smooth;
+}
+
+.linha-tabela {
+    display: flex; padding: 12px 15px; border-bottom: 1px solid #e0e0e0;
+    align-items: center; background: #fff; cursor: pointer; transition: all 0.2s;
+}
+.linha-tabela:nth-child(even) { background: #f9f9f9; }
+.linha-tabela:hover { background: var(--cor-tema-claro); }
+.linha-tabela:active { transform: scale(0.98); }
+
+.nome-campo { font-size: 16px; font-weight: 600; color: #333; transition: all 0.2s;}
+
+.badge-status {
+    background: #e8f5e9; border: 2px solid #81c784; color: #1b5e20;
+    padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: all 0.2s; width: 100%; box-sizing: border-box;
+}
+
+/* Estilo da Linha Censurada */
+.linha-tabela.censurado { background: #212121; border-bottom-color: #424242; }
+.linha-tabela.censurado .nome-campo { text-decoration: line-through; opacity: 0.6; color: #fff; }
+.linha-tabela.censurado .badge-status { background: #424242; border-color: #616161; color: #fff; }
+
+.linha-tabela.erro-destaque { animation: flashRedRow 2s infinite; }
+@keyframes flashRedRow { 0% { background: #ffb6c1; } 50% { background: #fff; } 100% { background: #ffb6c1; } }
+
+/* REGRA COMBINADA: Item censurado que está errado (Excesso) */
+.linha-tabela.censurado.erro-destaque { 
+    animation: flashDarkRedRow 2s infinite; 
+}
+@keyframes flashDarkRedRow { 
+    0% { background: #ffb6c1; } /* Vermelho escuro */
+    50% { background: #212121; } /* Fundo escuro original do censurado */
+    100% { background: #ffb6c1; } 
+}
+
+/* REGRA COMBINADA: Texto do item censurado que está errado (Excesso) */
+.linha-tabela.censurado.erro-destaque .nome-campo { 
+    animation: flashTextColorRow 2s infinite; 
+}
+@keyframes flashTextColorRow { 
+    0% { color: #000; } /* Preto original do censurado */
+    50% { color: #fff } /* Branco original do censurado */
+    100% { color: #000 } 
+}
+
+
+/* ================= BOTÃO DE EXPORTAR E ALERTAS ================= */
+.zona-inferior {
+    width: 100%; display: flex; flex-direction: column; align-items: center;
+    position: relative; z-index: 50; margin-top: auto;
+}
+
+.btn-exportar {
+    background: #4caf50; color: white; border: none; padding: 20px 40px; border-radius: 15px;
+    font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 8px 0 #2e7d32;
+    text-transform: uppercase; transition: all 0.1s; width: 90%; max-width: 600px;
+    display: flex; justify-content: center; align-items: center; gap: 15px; letter-spacing: 1px;
+    position: relative; z-index: 60;
+}
+.btn-exportar:active { transform: translateY(8px); box-shadow: 0 0 0 transparent; }
+.btn-exportar .icone { font-size: 28px; }
+
+.zona-alertas-local {
+    position: absolute; top: 100%; left: 0; width: 100%;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    pointer-events: none; z-index: 50; padding-top: 15px;
+}
+
+#toast-feedback {
+    position: relative; width: max-content; max-width: 90%; background: white; 
+    border-radius: 15px; padding: 12px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); text-align: center;
+    font-size: 15px; font-weight: 500; opacity: 0; pointer-events: none; color: #111;
+    transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-left: 8px solid transparent;
+}
+/* #toast-feedback.show { transform: translateY(0); opacity: 1; } */
+#toast-feedback.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto; /* Libera o clique */
+    cursor: pointer;      /* Muda o ponteiro do mouse */
+}
+#toast-feedback h3 { margin: 0 0 3px 0; font-size: 15px; text-transform: uppercase; }
+
+#toast-feedback.sucesso { border-left-color: #4caf50; }
+#toast-feedback.sucesso h3 { color: #2e7d32; }
+#toast-feedback.erro-vazamento { border-left-color: #d32f2f; }
+#toast-feedback.erro-vazamento h3 { color: #c62828; }
+#toast-feedback.erro-estatistica { border-left-color: #ff9800; }
+#toast-feedback.erro-estatistica h3 { color: #ef6c00; }
+
+/* ================= RESPONSIVIDADE (CELULAR DEITADO) ================= */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .area-jogo { padding-top: 45px; padding-bottom: 5px; gap: 10px; flex-direction: row; align-items: stretch;}
+
+    .coluna-esquerda { flex: 1.6; height: 100%; justify-content: center; min-width: 0;}
+    .coluna-direita { flex: 1; height: 100%; justify-content: center; position: relative;}
+
+    .painel-atendimento { height: 100%; max-height: none; border-left-width: 6px; width: 100%; margin: 0; }
+
+    .cartao-contexto { padding: 10px 15px; font-size: 15px; }
+    .cartao-contexto span { font-size: 11px; margin-bottom: 2px;}
+    .contador-tabelas { font-size: 13px; padding: 4px 10px;}
+
+    .tabela-container { margin: 10px; }
+    .tabela-header { padding: 8px 12px; font-size: 14px; }
+    .linha-tabela { padding: 8px 12px; }
+    .nome-campo { font-size: 14px; }
+    .col-status { width: 110px; }
+    .badge-status { padding: 4px 8px; font-size: 12px; }
+
+    .zona-inferior { margin-top: 0; padding-bottom: 0; }
+    .btn-exportar { padding: 15px; font-size: 18px; width: 95%; max-width: none;}
+    .btn-exportar .icone { font-size: 22px; }
+
+    .zona-alertas-local { transform: translateX(0); padding-top: 10px; }
+    #toast-feedback { font-size: 13px; padding: 8px 12px; }
+    #toast-feedback h3 { font-size: 13px; margin-bottom: 2px; }
+}

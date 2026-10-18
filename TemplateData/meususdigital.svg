@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <defs>
+    <clipPath id="borda-arredondada">
+      <rect width="300" height="300" rx="70" ry="70" />
+    </clipPath>
+  </defs>
+  
+  <g clip-path="url(#borda-arredondada)">
+    <rect x="0" y="0" width="100" height="100" fill="#FFD600" />   <rect x="100" y="0" width="100" height="100" fill="#1A3BFF" />   <rect x="200" y="0" width="100" height="100" fill="#FF7A00" />   <rect x="0" y="100" width="100" height="100" fill="#1A3BFF" />   <rect x="100" y="100" width="100" height="100" fill="#5A7CFF" /> <rect x="200" y="100" width="100" height="100" fill="#1A3BFF" /> <rect x="0" y="200" width="100" height="100" fill="#E30000" />   <rect x="100" y="200" width="100" height="100" fill="#1A3BFF" /> <rect x="200" y="200" width="100" height="100" fill="#00C800" /> </g>
+</svg>

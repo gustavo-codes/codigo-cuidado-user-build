@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, touch-action: none">
+    <title>Fase 1 - Recepção (Classificação LGPD)</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="stylesheet" href="../minijogos.css">
+    <link rel="stylesheet" href="../acessibilidade.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <button class="btn-voltar" onclick="Engine.cancelar()">&#8592; Sair</button>
+
+    <div class="hud">
+        <div class="hud-grupo">
+            <div class="hud-item" id="hud-tempo">⏳ 60s</div>
+            <div class="hud-item hud-btn" id="btn-pausa" onclick="Engine.togglePausa()">⏸️</div>
+            <div class="hud-item hud-btn" id="btn-mute" onclick="AudioSys.toggleMute()">🔊</div>
+        </div>
+        <div class="hud-item" id="hud-pontos-container">⭐ <span id="hud-pontos">0</span></div>
+    </div>
+
+    <!-- TELA DE INTRODUÇÃO -->
+    <div class="overlay" id="tela-intro">
+        <div class="painel-central">
+            <h2 id="txt-intro-titulo">Carregando...</h2>
+            <p id="txt-intro-desc"></p>
+
+            <div class="defin-wrapper">
+                <div id="txt-intro-defin" onclick="this.classList.toggle('expandido')">
+                    <span id="render-defin-curta" class="texto-curto"></span>
+                    <span id="render-defin-longa" class="texto-longo"></span>
+                </div>
+            </div>
+
+            <p id="txt-intro-dica"></p>
+            <p id="txt-intro-meta" style="font-size: 14px; color: #d32f2f; font-weight: bold;"></p>
+            
+            <div class="opcoes-dificuldade">
+                <label class="switch-container">
+                    <div class="switch-textos">
+                        <span>Modo Aleatório</span>
+                        <small>(Embaralhar Fichas)</small>
+                    </div>
+                    <input type="checkbox" id="toggle-dificuldade" checked>
+                    <span class="slider"></span>
+                </label>
+                <label class="assistencia-label" title="Tempo Extra (+50% tempo)">
+                    <input type="checkbox" id="check-tempo-extra">
+                    <span class="assistencia-icone">+⏱️</span>
+                </label>
+            </div>
+
+            <div class="botoes-coluna">
+                <!-- <button class="btn-acao" onclick="Engine.iniciar()">Iniciar Triagem</button> -->
+                <button class="btn-acao" onclick="Engine.mostrarTutorial()">Iniciar</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.cancelar()">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DE TUTORIAL PRÁTICO (Invisível para o clique, mas visível aos olhos) -->
+    <!-- <div class="overlay oculto" id="tela-tutorial" onpointerdown="Engine.iniciar()" style="cursor: pointer; z-index: 9999; background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;"> -->
+    <div class="overlay oculto" id="tela-tutorial" style="pointer-events: none; z-index: 9999; background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;">
+        <div class="tutorial-animacao">
+            <div class="mao-ghost">👆</div>
+        </div>
+    </div>
+
+    <!-- TELA DE FIM -->
+    <div class="overlay oculto" id="tela-fim">
+        <div class="painel-central">
+            <h2 id="txt-fim-titulo">Fim</h2>
+            <p id="txt-fim-msg"></p>
+            <div class="texto-legal" id="txt-fim-lei"></div>
+            
+            <div class="estatisticas-fim">
+                <div class="stats-row">
+                    <div>Processados:<span id="final-qtde" style="color: #424242;">0/0</span></div>
+                    <div>Tempo Restante:<span id="final-tempo" style="color: var(--cor-tema-escuro);">0s</span></div>
+                    <div>Precisão:<span id="final-taxa">0%</span></div>
+                </div>
+                <div class="score-destaque">
+                    Pontuação Final
+                    <span id="final-pontos">0</span>
+                </div>
+            </div>
+
+            <div class="botoes-coluna" id="botoes-fim"></div>
+        </div>
+    </div>
+
+    <!-- ÁREA DE JOGO -->
+    <div class="area-jogo" id="area-jogo" style="display: none;">
+        
+        <div class="area-cartao" id="container-cartao"></div>
+
+        <div class="zona-alertas">
+            <div id="toast-feedback">
+                <h3 id="toast-titulo">Atenção</h3>
+                <span id="toast-texto"></span>
+            </div>
+            <div id="alerta-combo">⚠️ Cuidado. Você está classificando dados incorretamente.</div>
+        </div>
+
+        <div class="alvos-container">
+            <div class="caixa-alvo alvo-pessoal" id="alvo-pessoal" data-tipo="pessoal">
+                <div class="caixa-header">
+                    <div class="icone">🟦</div>
+                    <div class="titulo">Pessoais</div>
+                    <div class="artigo">Art. 5º, I</div>
+                </div>
+                <div class="miniaturas-container" id="mini-pessoal"></div>
+            </div>
+            
+            <div class="caixa-alvo alvo-sensivel" id="alvo-sensivel" data-tipo="sensivel">
+                <div class="caixa-header">
+                    <div class="icone">🟥</div>
+                    <div class="titulo">Sensíveis</div>
+                    <div class="artigo">Art. 5º, II</div>
+                </div>
+                <div class="miniaturas-container" id="mini-sensivel"></div>
+            </div>
+            
+            <div class="caixa-alvo alvo-anonimo" id="alvo-anonimo" data-tipo="anonimizado">
+                <div class="caixa-header">
+                    <div class="icone">🟩</div>
+                    <div class="titulo">Anonimizados</div>
+                    <div class="artigo">Art. 5º, III</div>
+                </div>
+                <div class="miniaturas-container" id="mini-anonimo"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay oculto" id="tela-pausa">
+        <div class="painel-central" style="position: relative; min-height: 200px;">
+            <button onclick="Engine.esconderOverlayPausa()" 
+                style="position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 28px; cursor: pointer; color: #666;" title="Ocultar Painel">
+                👁️
+            </button>
+
+            <h1 style="font-size: 40px; color: var(--cor-tema-escuro); margin: 0;">PAUSADO</h1>
+            <p style="color: #201e1e; margin-top: 10px;">O cronômetro e os alertas estão congelados.</p>
+            
+            <div class="botoes-coluna" style="margin-top: 20px;">
+                <button class="btn-acao" onclick="Engine.togglePausa()">▶️ Retomar Jogo</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.iniciar()">🔄 Reiniciar Fase</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.voltarAoMenu()">⏪ Introdução</button>
+            </div>
+
+            <p style="color: #201e1e; font-size: 12px; margin-top: 15px;">Dica: Clique no 👁️ acima para ocultar o painel sem despausar.</p>
+        </div>
+    </div>
+
+    <script src="../minijogos.js"></script>
+    <script src="../acessibilidade.js"></script>
+    <script src="script.js"></script>
+
+    <!-- <script>
+        const AudioSys = {
+ 
+            tocar: function(tipo) {
+                if (this.mutado || !this.ctx) return;
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                const now = this.ctx.currentTime;
+
+                if (tipo === 'sucesso') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                    gain.gain.setValueAtTime(0.05, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now); osc.stop(now + 0.1);
+                } else if (tipo === 'combo') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(440, now); osc.frequency.setValueAtTime(554, now + 0.1); osc.frequency.setValueAtTime(659, now + 0.2); osc.frequency.setValueAtTime(880, now + 0.3);
+                    gain.gain.setValueAtTime(0.05, now); gain.gain.linearRampToValueAtTime(0, now + 0.4);
+                    osc.start(now); osc.stop(now + 0.4);
+                } else if (tipo === 'erro') {
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.4);
+                    gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now); osc.stop(now + 0.4);
+                }
+            }
+        };
+    </script> -->
+</body>
+</html>

@@ -1,0 +1,132 @@
+/* ================= VARIÁVEIS DE TEMA ESPECÍFICAS ================= */
+:root {
+    --cor-tema: #00838f; /* Ciano Clínico (Digital) */
+    --cor-tema-escuro: #005662;
+    --cor-tema-claro: #e0f7fa;
+    --cor-erro: #d32f2f;
+    --cor-sucesso: #2e7d32;
+}
+
+body::before {
+    content: "📱💬"; position: absolute; font-size: 200px; opacity: 0.05; z-index: -1;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); letter-spacing: -20px;
+    white-space: nowrap;
+}
+
+/* ================= ÁREA DE JOGO ================= */
+.area-jogo {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; max-width: 900px; height: 100%; 
+    padding-top: 60px; padding-bottom: 20px;
+    box-sizing: border-box; position: relative;
+}
+
+/* ================= SIMULADOR DE NOTIFICAÇÃO ================= */
+.simulador-area {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; max-width: 500px; gap: 30px; z-index: 100;
+}
+
+.notificacao-card {
+    background: #ffffff; border-radius: 20px; width: 100%;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15), 0 5px 15px rgba(0,131,143,0.1);
+    border: 3px solid var(--cor-tema-claro);
+    overflow: hidden; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.notificacao-header {
+    background: var(--cor-tema-claro); padding: 15px 20px;
+    display: flex; align-items: center; gap: 15px;
+    border-bottom: 2px solid rgba(0,0,0,0.05);
+}
+.icone-perfil {
+    background: white; width: 45px; height: 45px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: var(--cor-tema);
+}
+.textos-header { display: flex; flex-direction: column; }
+.nome-app { font-size: 16px; font-weight: 900; color: var(--cor-tema-escuro); }
+.status-app { font-size: 13px; font-weight: 700; color: #666; }
+
+.notificacao-body {
+    padding: 30px 25px; font-size: 22px; font-weight: 700; color: #333;
+    line-height: 1.4; text-align: center;
+}
+
+/* ================= BOTÕES MANUAIS ================= */
+.controles-manuais {
+    display: flex; gap: 20px; justify-content: center; width: 100%;
+}
+.btn-decisao {
+    flex: 1; padding: 20px 10px; font-size: 18px; font-weight: 900; text-transform: uppercase;
+    border-radius: 20px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.1s; box-shadow: 0 8px 0 rgba(0,0,0,0.2);
+}
+.btn-inseguro { background: white; color: var(--cor-erro); border: 4px solid var(--cor-erro); }
+.btn-inseguro:active { transform: translateY(8px); box-shadow: none; background: #ffebee;}
+
+.btn-seguro { background: white; color: var(--cor-sucesso); border: 4px solid var(--cor-sucesso); }
+.btn-seguro:active { transform: translateY(8px); box-shadow: none; background: #e8f5e9;}
+
+
+/* ================= ZONA DE ALERTAS PADRÃO OURO ================= */
+.zona-alertas { position: relative; width: 100%; height: 0; z-index: 200; pointer-events: none; }
+#toast-feedback {
+    position: fixed; bottom: 25px; left: 50%; transform: translate(-50%, 50px);
+    width: max-content; max-width: 90%; background: white; border-radius: 15px; padding: 12px 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; font-size: 16px; font-weight: 500; color: #111;
+    opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-left: 8px solid transparent; pointer-events: none;
+}
+#toast-feedback.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; cursor: pointer; }
+#toast-feedback h3 { margin: 0 0 3px 0; font-size: 16px; text-transform: uppercase; }
+#toast-feedback.sucesso { border-left-color: #4caf50; }
+#toast-feedback.sucesso h3 { color: #2e7d32; }
+#toast-feedback.erro { border-left-color: #f44336; }
+#toast-feedback.erro h3 { color: #c62828; }
+
+#alerta-combo {
+    position: fixed; bottom: 95px; left: 50%; transform: translate(-50%, 50px);
+    background: #ff9800; color: white; padding: 10px 20px; border-radius: 30px; 
+    font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; 
+    transition: all 0.3s; width: max-content; max-width: 90%; text-align: center; pointer-events: none;
+}
+#alerta-combo.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; cursor: pointer; }
+
+/* ================= ANIMAÇÃO DO TUTORIAL ================= */
+#tela-tutorial { pointer-events: none; z-index: 9999; background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;}
+.tutorial-animacao { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 250px; z-index: 1; pointer-events: none; }
+.mao-ghost { font-size: 70px; position: absolute; top: 70%; left: 50%; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); animation: clicarAnim 1.5s infinite ease-in-out; }
+
+@keyframes clicarAnim {
+    0%   { transform: translate(-50%, 0) scale(1.2); opacity: 0; }
+    20%  { transform: translate(-50%, 0) scale(1.2); opacity: 1; }
+    50%  { transform: translate(-50%, 0) scale(0.9); } 
+    80%  { transform: translate(-50%, 0) scale(1.2); opacity: 1; } 
+    100% { transform: translate(-50%, 0) scale(1.2); opacity: 0; }
+}
+
+/* ================= RESPONSIVIDADE (CELULAR DEITADO) ================= */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .area-jogo { padding-top: 45px; padding-bottom: 5px;}
+    
+    .simulador-area { flex-direction: row; align-items: stretch; max-width: 700px; gap: 15px; }
+    .notificacao-card { flex: 2; display: flex; flex-direction: column; }
+    .notificacao-header { padding: 8px 15px; }
+    .icone-perfil { width: 30px; height: 30px; font-size: 16px; }
+    .nome-app { font-size: 14px; }
+    .notificacao-body { padding: 15px; font-size: 16px; display: flex; align-items: center; justify-content: center; flex: 1;}
+    
+    .controles-manuais { flex-direction: column; flex: 1; gap: 10px; }
+    .btn-decisao { padding: 10px; font-size: 14px; border-width: 3px; box-shadow: 0 5px 0 rgba(0,0,0,0.2); }
+    .btn-decisao:active { transform: translateY(5px); }
+
+    #toast-feedback { bottom: 5px; padding: 6px 12px; font-size: 12px; }
+    #toast-feedback h3 { font-size: 12px; margin-bottom: 2px; }
+    #alerta-combo { bottom: 55px; font-size: 12px; padding: 6px 12px; }
+}

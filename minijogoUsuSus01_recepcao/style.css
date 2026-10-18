@@ -1,0 +1,163 @@
+/* ================= VARIÁVEIS DE TEMA ESPECÍFICAS ================= */
+:root {
+    --cor-tema: #00897b; 
+    --cor-tema-escuro: #00695c;
+    --cor-tema-claro: #e0f2f1;
+}
+
+body::before {
+    content: "🏥📝"; position: absolute; font-size: 200px; opacity: 0.05; z-index: -1;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); letter-spacing: -20px;
+    white-space: nowrap;
+}
+
+/* ================= ÁREA DE JOGO ================= */
+.area-jogo {
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    width: 100%; max-width: 900px; height: 100%; 
+    padding-top: 70px; padding-bottom: 110px;
+    box-sizing: border-box; position: relative;
+}
+
+.area-cartao {
+    flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; position: relative; z-index: 100;
+}
+.cartao-dado {
+    background: white; border: 6px solid #ffca28; border-radius: 15px;
+    padding: 20px 30px; font-size: 24px; font-weight: bold; color: #111;
+    cursor: grab; touch-action: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center; max-width: 350px; z-index: 100; position: absolute;
+    transition: opacity 0.2s;
+}
+.cartao-dragging {
+    opacity: 0.95 !important; pointer-events: none;
+    transform: scale(1.1) !important;
+    z-index: 8999 !important; margin: 0; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* ================= CAIXAS 3D E MINIATURAS (2 COLUNAS) ================= */
+.alvos-container {
+    display: grid; grid-template-columns: repeat(2, 1fr); 
+    gap: 20px; width: 100%; max-width: 700px; 
+    z-index: 50; perspective: 800px;
+}
+
+.caixa-alvo {
+    position: relative; border-radius: 15px; padding: 15px 10px; text-align: center;
+    display: flex; flex-direction: column; justify-content: flex-start;
+    border: 2px solid rgba(0,0,0,0.1); border-bottom-width: 14px;
+    box-shadow: 0 15px 20px -5px rgba(0,0,0,0.3);
+    transition: transform 0.1s, border-bottom-width 0.1s, box-shadow 0.1s;
+    overflow: hidden; max-height: 220px;
+}
+
+.caixa-header { display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 10px; }
+.caixa-header .icone { font-size: 35px; margin-bottom: 5px; filter: drop-shadow(0 3px 2px rgba(0,0,0,0.2));}
+.caixa-header .titulo { font-size: 18px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;}
+
+.miniaturas-container {
+    display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; width: 100%;
+    align-items: flex-start; overflow-y: auto; flex: 1; padding-bottom: 5px;
+}
+.miniaturas-container::-webkit-scrollbar { width: 5px; }
+.miniaturas-container::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 5px; }
+
+.mini-card {
+    font-size: 11px; font-weight: bold; padding: 5px 8px; border-radius: 6px; color: white;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: fadeInMini 0.2s ease-out;
+}
+.mini-card.sucesso { background-color: #2e7d32; }
+.mini-card.erro { background-color: #c62828; }
+@keyframes fadeInMini { from { transform: scale(0); } to { transform: scale(1); } }
+
+.alvo-comum { background: linear-gradient(to bottom, #ffffff, #e8f5e9); color: #2e7d32; border-bottom-color: #388e3c; }
+.alvo-protegido { background: linear-gradient(to bottom, #ffffff, #fff3e0); color: #e65100; border-bottom-color: #f57c00; }
+
+.caixa-alvo.flash {
+    transform: translateY(8px); border-bottom-width: 6px;
+    box-shadow: 0 5px 10px -2px rgba(0,0,0,0.4); filter: brightness(1.1);
+}
+
+/* ================= ZONA DE ALERTAS PADRÃO OURO ================= */
+.zona-alertas { position: relative; width: 100%; height: 0; z-index: 200; pointer-events: none; }
+#toast-feedback {
+    position: fixed; bottom: 25px; left: 50%; transform: translate(-50%, 50px);
+    width: max-content; max-width: 90%; background: white; border-radius: 15px; padding: 12px 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; font-size: 16px; font-weight: 500; color: #111;
+    opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-left: 8px solid transparent; pointer-events: none;
+}
+#toast-feedback.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; cursor: pointer; }
+#toast-feedback h3 { margin: 0 0 3px 0; font-size: 16px; text-transform: uppercase; }
+#toast-feedback.sucesso { border-left-color: #4caf50; }
+#toast-feedback.sucesso h3 { color: #2e7d32; }
+#toast-feedback.erro { border-left-color: #f44336; }
+#toast-feedback.erro h3 { color: #c62828; }
+
+#alerta-combo {
+    position: fixed; bottom: 95px; left: 50%; transform: translate(-50%, 50px);
+    background: #ff9800; color: white; padding: 10px 20px; border-radius: 30px; 
+    font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; 
+    transition: all 0.3s; width: max-content; max-width: 90%; text-align: center; pointer-events: none;
+}
+#alerta-combo.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; cursor: pointer; }
+
+/* ================= ANIMAÇÃO DO TUTORIAL (AJUSTE DO BLUR) ================= */
+#tela-tutorial {
+    pointer-events: none; 
+    z-index: 9999; 
+    background: transparent !important; 
+    backdrop-filter: none !important; 
+    -webkit-backdrop-filter: none !important;
+}
+.tutorial-animacao { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 250px; z-index: 1; pointer-events: none; }
+.cartao-ghost { background: white; border: 6px solid #ffca28; border-radius: 15px; padding: 20px 30px; font-size: 24px; font-weight: bold; text-align: center; color: #111; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: max-content; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+.mao-ghost { font-size: 70px; position: absolute; top: 40px; left: 50%; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); animation: arrastarAnim 2.5s infinite ease-in-out; }
+
+@keyframes arrastarAnim {
+    0%   { transform: translate(-50%, 0) scale(1.2); opacity: 0; }
+    15%  { transform: translate(-50%, 0) scale(1.2); opacity: 1; }
+    25%  { transform: translate(-50%, 0) scale(0.9); } 
+    70%  { transform: translate(-50%, 100px) scale(0.9); opacity: 1; } 
+    85%  { transform: translate(-50%, 100px) scale(1.2); opacity: 0; } 
+    100% { transform: translate(-50%, 100px) scale(1.2); opacity: 0; }
+}
+
+/* ================= RESPONSIVIDADE (CELULAR DEITADO) ================= */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .area-jogo { padding-top: 45px; padding-bottom: 60px; gap: 5px;}
+    .btn-voltar:active { box-shadow: 1px 1px 0px 0px #004d40; transform: translate(1px, 1px); }
+
+    #toast-feedback { position: fixed; bottom: 10px; left: 50%; padding: 8px 15px; font-size: 13px; max-width: 80%; }
+    #toast-feedback h3 { font-size: 13px; margin-bottom: 2px; }
+    #alerta-combo { position: fixed; bottom: 65px; left: 50%; font-size: 13px; padding: 8px 15px; }
+    #toast-feedback.show { transform: translate(-50%, 0); }
+    #alerta-combo.show { transform: translate(-50%, 0); }
+    
+    .tutorial-animacao { height: 120px; }
+    .cartao-ghost { padding: 10px 20px; font-size: 18px; border-width: 4px; }
+    .mao-ghost { font-size: 50px; top: 25px; }
+    
+    .area-cartao { flex: 1; display: flex; align-items: center; justify-content: center; margin-top: 0; width: 100%; }
+    .cartao-dado { padding: 10px 20px; font-size: 18px; border-width: 4px; max-width: 300px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+
+    .alvos-container { gap: 10px; }
+    .caixa-alvo { max-height: 125px; transform: translateY(-20px); padding: 15px; border-bottom-width: 8px; flex-direction: column; justify-content: flex-start; }
+    .caixa-alvo.flash { transform: translateY(-16px); border-bottom-width: 4px; }
+
+    .caixa-header { flex-direction: row; gap: 5px; align-items: center; justify-content: center; margin-bottom: 5px; }
+    .caixa-header .icone { font-size: 18px; margin: 0; }
+    .caixa-header .titulo { font-size: 12px; margin: 0; }
+    
+    .mini-card { font-size: 9px; padding: 2px 4px; border-radius: 4px;}
+
+    @keyframes arrastarAnim {
+        0%   { transform: translate(-50%, 0) scale(1.2); opacity: 0; }
+        15%  { transform: translate(-50%, 0) scale(1.2); opacity: 1; }
+        25%  { transform: translate(-50%, 0) scale(0.9); }
+        70%  { transform: translate(-50%, 40px) scale(0.9); opacity: 1; }
+        85%  { transform: translate(-50%, 40px) scale(1.2); opacity: 0; }
+        100% { transform: translate(-50%, 40px) scale(1.2); opacity: 0; }
+    }
+}

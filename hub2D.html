@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Seleção de Fases - LGPD</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="acessibilidade.css">
+
+    <style>
+        /* ================= VARIÁVEIS DO GUIA IDV ================= */
+        :root {
+            --idv-dark-blue: #004357;
+            --idv-light-blue: #00ACDE;
+            --idv-pale-blue: #B9EFFF;
+            --idv-mint: #E0FFF0;
+            --idv-white: #F1FFF8;
+            --fonte-texto: 'Roboto', sans-serif;
+        }
+
+        body {
+            margin: 0; font-family: var(--fonte-texto); background-color: #FFFFFF;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            overflow-y: auto; overflow-x: hidden;
+        }
+
+        /* ================= DESTAQUES DE CONCLUSÃO DE PERFIL ================= */
+        /* ATMOSFERA DE VITÓRIA (TELA INTEIRA) */
+        /* Nível 1: Jornada Concluída (Filtro sutilmente Esmeralda/Verde no Fundo) */
+        body.vitoria-verde .bg-imagem-real {
+            filter: sepia(0.3) hue-rotate(80deg) brightness(1.05);
+            /* transition: filter 1s ease; */
+        }
+
+        /* Nível 2: Especialista de Ouro (Filtro Dourado + Aura Brilhante na Tela) */
+        body.vitoria-ouro .bg-imagem-real {
+            filter: sepia(0.5) hue-rotate(10deg) saturate(1.5) brightness(1.1);
+            /* transition: filter 1s ease; */
+        }
+
+        /* Cria uma "vinheta" (borda interna brilhante) ao redor de todo o monitor/celular */
+        body.vitoria-ouro::after {
+            content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            box-shadow: inset 0 0 100px rgba(255, 215, 0, 0.25);
+            pointer-events: none; /* Deixa os cliques passarem direto para os botões */
+            z-index: 1;
+            animation: pulseAura 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseAura {
+            0%   { box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.1); }
+            /* 40%  { box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.1); } */
+            50%  { box-shadow: inset 0 0 120px rgba(255, 215, 0, 0.35); }
+            /* 60%  { box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.1); } */
+            100% { box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.1); }
+        }
+        /* ================= DESTAQUES DE CONCLUSÃO DE PERFIL ================= */
+
+        .bg-imagem-real {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            object-fit: cover; object-position: center; transform: scale(1.05); opacity: 1;
+        }
+
+        /* ================= HEADER ================= */
+        header {
+            width: 90%; max-width: 900px; margin-top: 20px; padding: 15px 25px;
+            background: linear-gradient(90deg, var(--idv-mint) 20%, rgba(224, 255, 240, 0) 100%);
+            border: 4px solid var(--idv-light-blue); border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); box-sizing: border-box; 
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 10; cursor: default;
+        }
+
+        /* ================= DESTAQUES DE CONCLUSÃO DE PERFIL ================= */
+        /* Nível 1: Tudo concluído, mas sem todas as estrelas (Troféu Verde) */
+        header.perfil-concluido {
+            border-color: #4CAF50;
+            background: linear-gradient(90deg, #E8F5E9 20%, rgba(232, 245, 233, 0) 100%);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+            /* transition: all 0.5s ease; */
+        }
+        header.perfil-concluido .perfil-label { color: #2E7D32; }
+
+        /* Nível 2: Tudo concluído COM 3 ESTRELAS EM TUDO (Coroa de Ouro) */
+        header.perfil-mestre {
+            border-color: #FFD700;
+            background: linear-gradient(90deg, #FFF8E1 20%, rgba(255, 248, 225, 0) 100%);
+            animation: glowMestre 2s infinite ease-in-out;
+        }
+        header.perfil-mestre .perfil-label { color: #F57F17; }
+        header.perfil-mestre .perfil-tipo { text-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
+
+        @keyframes glowMestre {
+            0%   { box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3); }
+            /* 40%  { box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3); } */
+            50%  { box-shadow: 0 10px 50px rgba(255, 215, 0, 0.7); }
+            /* 60%  { box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3); } */
+            100% { box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3); }
+        }
+        /* ================= DESTAQUES DE CONCLUSÃO DE PERFIL ================= */
+
+        .perfil-wrapper {
+            display: flex; flex-direction: column; align-items: center; text-align: center; line-height: 1.1;
+        }
+        .perfil-label { font-size: 12px; font-weight: 700; color: var(--idv-light-blue); letter-spacing: 2px; margin-bottom: 2px;}
+        .perfil-tipo-container { display: flex; align-items: center; gap: 10px; }
+        .perfil-tipo { font-size: 24px; font-weight: 900; color: var(--idv-dark-blue); text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);}
+        
+        .btn-trocar-perfil {
+            background: var(--idv-light-blue); color: white; border: none; border-radius: 10px;
+            padding: 4px 8px; font-size: 10px; font-weight: 900; text-transform: uppercase;
+            cursor: pointer; box-shadow: 0 3px 0 var(--idv-dark-blue); transition: all 0.1s;
+        }
+        .btn-trocar-perfil:active { transform: translateY(3px); box-shadow: none; }
+
+        .btn-icone {
+            background-color: transparent; border: none; width: 55px; height: 55px;
+            cursor: pointer; transition: transform 0.05s linear;
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+        }
+        .btn-icone:hover { transform: scale(1.08); }
+        .btn-icone:active { transform: scale(0.92); }
+        .btn-voltar { background-image: url('menu_inicial/ui/a.png'); }
+        .btn-apagar {
+            background-color: #ed5b6a; font-size: 30px; border-radius: 50%; 
+            transition: transform 0.05s linear, background-color 0.2s ease;
+        }
+        .btn-apagar:hover { background-color: #8b1c27; }
+
+        /* ================= GRID DE FASES ================= */
+        /* .container-fases { 
+            width: 90%; max-width: 800px; padding: 20px 0; box-sizing: border-box; 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+            gap: 20px; justify-items: center; z-index: 10; margin-bottom: 30px;
+        } */
+        .container-fases { 
+            width: 90%;
+            max-width: 620px; /* Trava a largura exata para caberem 4 cartões por linha */
+            padding: 20px 0; box-sizing: border-box; margin: 0 auto 30px auto;
+            display: flex; flex-wrap: wrap; 
+            justify-content: flex-start; /* Garante que os cartões preencham da esquerda para a direita sem mudar de posição */
+            gap: 20px; z-index: 10; 
+        }
+
+        .level-card {
+            background: rgba(255, 255, 255, 0.9); border: 4px solid #b0bec5; border-radius: 20px;
+            width: 130px; height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); cursor: pointer; transition: all 0.2s ease;
+            position: relative; text-align: center;
+        }
+
+        .level-card:hover { transform: translateY(-5px); box-shadow: 0 15px 25px rgba(0,0,0,0.3); }
+        .level-card:active { transform: translateY(2px); box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+
+        .level-number { font-size: 45px; font-weight: 900; color: var(--idv-dark-blue); line-height: 1; margin-bottom: 5px;}
+        .level-title { 
+            font-size: 18px; font-weight: 700; color: #555; padding: 0 5px; line-height: 1.2;
+            overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+            line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        }
+
+        .level-card.destaque-atual {
+            border-color: var(--idv-light-blue); background: var(--idv-white);
+            box-shadow: 0 0 20px rgba(0, 172, 222, 0.5); transform: scale(1.05);
+        }
+        .level-card.destaque-atual .level-number { color: var(--idv-light-blue); }
+        .level-card.destaque-atual:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(0, 172, 222, 0.7); }
+
+        .level-card.concluida { border-color: #81c784; background: rgba(232, 245, 233, 0.95); }
+        .level-card.concluida .level-number { color: #2e7d32; }
+
+        /* ================= DESTAQUES DE CONCLUSÃO DE PERFIL ================= */
+        /* .level-card.mestre { border-color: #ffeb7b; background: rgba(232, 245, 233, 0.95); } */
+        /* .level-card.mestre .level-number { color: #FFD700; } */
+        .level-card.mestre {
+            border-color: #FFD700;
+            background: rgba(255, 248, 225, 0.95); /* Fundo ouro bem claro e suave */
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2); /* Sombra dourada */
+            /* Aplica a animação infinita de pulsação */
+            animation: glowCardMestre 2s infinite ease-in-out;
+        }
+        .level-card.mestre .level-number { color: #F57F17; } /* Laranja escuro para dar contraste com o fundo */
+        /* .level-card.mestre .level-title { color: #F57F17; } Laranja escuro para dar contraste com o fundo */
+
+        /* Keyframes exclusivos para os cartões brilharem */
+        @keyframes glowCardMestre {
+            0%   { box-shadow: 0 10px 15px rgba(255, 215, 0, 0.2); }
+            50%  { box-shadow: 0 10px 35px rgba(255, 215, 0, 0.8); }
+            100% { box-shadow: 0 10px 15px rgba(255, 215, 0, 0.2); }
+        }
+        /* ================= DESTAQUES DE CONCLUSÃO DE PERFIL ================= */
+
+        .estrelas-container { display: flex; gap: 3px; margin-top: 8px; }
+        .estrela { font-size: 30px; filter: grayscale(100%); opacity: 0.4; transition: all 0.3s;}
+        .estrela.maior { font-size: 50px;}
+        /* .estrela.ativa { filter: none; opacity: 1; text-shadow: 0 0 10px gold; } */
+        .estrela.ativa { filter: saturate(1.3) brightness(1.2); opacity: 1; text-shadow: 0 0 10px gold; }
+        /* ================= ESTRELA INTERMEDIÁRIA (Ouro Claro) ================= */
+        /* .estrela.ativa-clara { filter: saturate(0.3) brightness(1.3); opacity: 0.8; text-shadow: 0 0 4px rgba(200, 200, 200, 0.6); } */
+        .estrela.ativa-clara { filter: saturate(0.8) brightness(1.3); opacity: 0.8; text-shadow: 0 0 4px rgba(200, 200, 200, 0.6); }
+        /* .estrela.ativa-clara { filter: saturate(1.3) brightness(1.3); opacity: 0.8; text-shadow: 0 0 4px rgba(200, 200, 200, 0.6); } */
+
+        .level-card.bloqueada {
+            /* opacity: 0.6; */
+            border-color: #999;
+            filter: grayscale(100%);
+            pointer-events: none; background: #e0e0e0;
+        }
+        .level-card.bloqueada .level-number { display: none; }
+        .level-card.bloqueada .level-title { display: none; }
+        .level-card.bloqueada .estrelas-container { display: none; }
+        .level-card.bloqueada::before { content: "🔒"; font-size: 55px; margin-bottom: 5px; }
+
+        /* ================= MODAL DE DETALHES DA FASE ================= */
+        .overlay-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.7); z-index: 10000;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(3px); transition: opacity 0.2s;
+        }
+        .overlay-modal.oculto { display: none; opacity: 0; pointer-events: none; }
+        
+        .modal-box {
+            position: relative;
+            background: var(--idv-mint); border-radius: 20px; padding: 35px 25px 25px 25px; width: 90%; max-width: 400px;
+            text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.5); border: 4px solid var(--idv-dark-blue);
+            
+            /* Solução para o corte no celular deitado */
+            max-height: 85vh; overflow-y: auto; box-sizing: border-box;
+        }
+        
+        .btn-voltar-modal {
+            position: absolute; top: 15px; left: 15px;
+            background-color: transparent; border: none; width: 45px; height: 45px;
+            cursor: pointer; transition: transform 0.05s linear;
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+            background-image: url('menu_inicial/ui/a.png');
+        }
+        .btn-voltar-modal:active { transform: scale(0.9); }
+
+        .modal-box h3 { margin: 10px 0 10px 0; color: var(--idv-dark-blue); font-size: 24px; font-weight: 900; text-transform: uppercase;}
+        .modal-box p { margin: 0 0 20px 0; color: #444; font-size: 15px; font-weight: 700; line-height: 1.4; }
+
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px;
+            background: rgba(255,255,255,0.7); border: 2px solid var(--idv-pale-blue); padding: 15px; border-radius: 15px;
+        }
+        .stat-item { display: flex; flex-direction: column; gap: 5px; align-items: center;}
+
+        .stat-label { 
+            font-size: 11px; font-weight: 900; color: var(--idv-dark-blue); text-transform: uppercase;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .stat-valor { font-size: 18px; font-weight: 900; color: var(--idv-light-blue); }
+
+        /* ================= CORES GOLDEN PARA OS RECORDES ================= */
+        .texto-gold {
+            color: #fbc02d !important;
+            /* text-shadow: 0 0 5px rgba(251, 192, 45, 0.5); */
+        }
+        /* .texto-gold-claro {
+            color: #dcb858 !important;
+        } */
+        /* Cor Prata para o "Quase lá" (Substitui o gold-claro) */
+        /* .texto-prata {
+            color: #cad28e !important;
+            text-shadow: 0 0 5px rgba(120, 144, 156, 0.4);
+        } */
+        /* Cor Esmeralda para o "Muito Bom" (Substitui o Prata) */
+        .texto-esmeralda {
+            color: #43A047 !important;
+            /* text-shadow: 0 0 5px rgba(67, 160, 71, 0.4); */
+        }
+
+        .btn-jogar {
+            width: 100%; background: var(--idv-light-blue); color: var(--idv-white);
+            border: 3px solid var(--idv-dark-blue); box-shadow: 0 5px 0 var(--idv-dark-blue);
+            padding: 15px; border-radius: 30px; font-size: 16px; font-weight: 900; 
+            cursor: pointer; text-transform: uppercase; margin-bottom: 5px; transition: all 0.1s;
+        }
+        .btn-jogar:hover { background: #0093be; }
+        .btn-jogar:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+
+        /* ================= IFRAME DO MINIJOGO ================= */
+        #game-wrapper {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgb(255, 255, 255); z-index: 2147483647; display: none;
+            justify-content: center; align-items: center;
+        }
+        #game-iframe { aspect-ratio: 16 / 9; width: 100%; max-height: 100vh; max-width: 177.78vh; border: none; }
+
+        body.jogo-aberto { overflow: hidden !important; }
+        body.jogo-aberto .btn-acessibilidade-audio,
+        body.jogo-aberto [vw] {
+            visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; z-index: -1 !important;
+        }
+
+        /* CELULAR RESPONSIVIDADE */
+        /* @media screen and (max-width: 600px) {
+            header { flex-direction: column; gap: 15px; text-align: center; }
+            .container-fases { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 15px; }
+            .level-card { width: 95px; height: 95px; border-radius: 15px; border-width: 3px;}
+            .level-number { font-size: 32px; }
+            .level-title { font-size: 9px; }
+            .level-card.bloqueada::before { font-size: 32px; }
+            
+            .modal-box { padding: 45px 20px 20px 20px; }
+            .btn-voltar-modal { top: 10px; left: 10px; width: 35px; height: 35px; }
+            .stats-grid { padding: 10px; gap: 5px; }
+            .stat-valor { font-size: 15px; }
+        } */
+
+        @media screen and (max-height: 600px) and (orientation: landscape) {
+            /* .container-fases { gap: 10px; } */
+            /* Aumenta de 90% para 98% para usar toda a largura segura do celular */
+            .container-fases { width: 98%; gap: 8px; }
+
+            /* .level-card { width: 90px; height: 90px; border-radius: 15px; border-width: 3px;} */
+            /* Cartões ligeiramente menores (85px) para caberem 6 em telas pequenas */
+            .level-card { width: 85px; height: 85px; border-radius: 12px; border-width: 3px;}
+
+            .level-number { font-size: 32px; }
+            /* .level-title { font-size: 12px; } */
+            /* .level-card.bloqueada::before { font-size: 40px; } */
+            .level-title { font-size: 11px; } /* Ajuste fino na fonte para não quebrar o texto */
+            .level-card.bloqueada::before { font-size: 38px; }
+
+            .modal-box { padding: 10px 20px 20px 20px; }
+            .btn-voltar-modal { top: 10px; left: 10px; width: 35px; height: 35px; }
+            .stats-grid { padding: 10px; gap: 5px; }
+            .stat-valor { font-size: 15px; }
+
+            .estrela { font-size: 20px;}
+            .estrela.maior { font-size: 30px;}
+        }
+    </style>
+</head>
+<body>
+
+    <img src="menu_inicial/images/fundo.jpg" class="bg-imagem-real" alt="Fundo">
+
+    <header>
+        <button class="btn-icone btn-voltar" onclick="voltarParaMenu()" title="Voltar ao Menu"></button>
+        <div class="perfil-wrapper">
+            <span class="perfil-label">Perfil Atual</span>
+            <div class="perfil-tipo-container">
+                <span class="perfil-tipo" id="txt-perfil-header">Carregando...</span>
+            </div>
+            <button class="btn-trocar-perfil" onclick="alternarPerfil()">Trocar</button>
+        </div>
+        <button class="btn-icone btn-apagar" onclick="apagarProgresso()" title="Descartar Progresso">🗑️</button>
+    </header>
+
+    <div class="container-fases" id="lista-fases"></div>
+
+    <!-- MODAL DE DETALHES DA FASE -->
+    <div id="modal-fase" class="overlay-modal oculto" onclick="fecharModalFase()">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <button class="btn-voltar-modal" onclick="fecharModalFase()" aria-label="Fechar e voltar"></button>
+            
+            <div class="estrelas-container" id="modal-fase-estrelas" style="justify-content: center; margin-bottom: 5px; font-size: 24px;"></div>
+            <h3 id="modal-fase-titulo">Fase</h3>
+            <p id="modal-fase-desc">Descrição</p>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">⭐ Pontuação</span>
+                    <span class="stat-valor" id="modal-fase-pts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">⏱️ Tempo</span>
+                    <span class="stat-valor" id="modal-fase-tempo">0s</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">🎯 Precisão</span>
+                    <span class="stat-valor" id="modal-fase-precisao">0%</span>
+                </div>
+            </div>
+
+            <button class="btn-jogar" id="btn-iniciar-fase">Jogar Fase</button>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR APAGAR -->
+    <div id="modal-confirmacao" class="overlay-modal oculto">
+        <div class="modal-box">
+            <h3 style="color: #d32f2f;">⚠️ Atenção</h3>
+            <p id="modal-texto-alerta"></p>
+            <div style="display: flex; gap: 15px;">
+                <button class="btn-jogar" style="background: white; color: #111; border-color: #111; box-shadow: 0 4px 0 #111;" onclick="fecharModalConfirmacao()">Cancelar</button>
+                <button class="btn-jogar" style="background: #d32f2f; color: white; border-color: #7f0000; box-shadow: 0 4px 0 #7f0000;" onclick="confirmarApagarProgresso()">Apagar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-wrapper">
+        <iframe id="game-iframe" src="" allow="autoplay"></iframe>
+    </div>
+
+    <script>
+        const PASTAS = {
+            profissional: [
+                'minijogoProf01_triagem_recepcao',
+                'minijogoProf02_finalid_neces_atend',
+                'minijogoProf03_revogacao_sistema',
+                'minijogoProf04_direitos_portal_paciente',
+                'minijogoProf05_anonimizacao_pesquisa',
+                'minijogoProf06_criancas_pediatria',
+                'minijogoProf07_gestao_administracao', 
+                'minijogoProf08_ciberseguranca_seguranca',
+                'minijogoProf09_incidente_seguranca'
+            ],
+            usuario_sus: [
+                'minijogoUsuSus01_recepcao',
+                'minijogoUsuSus02_triagem',
+                'minijogoUsuSus03_consultorio', 
+                'minijogoUsuSus04_exames', 
+                'minijogoUsuSus05_administracao', 
+                'minijogoUsuSus06_consentimento'
+            ]
+        };
+
+        const METADADOS_FASES = {
+            'minijogoProf01_triagem_recepcao': { titulo: 'Fase 1: Recepção', desc: 'Classificação de dados e recepção de usuários.' },
+            'minijogoProf02_finalid_neces_atend': { titulo: 'Fase 2: Atendimento', desc: 'Princípios de necessidade e finalidade.' },
+            'minijogoProf03_revogacao_sistema': { titulo: 'Fase 3: Sistema', desc: 'Processos de anonimização de dados.' },
+            'minijogoProf04_direitos_portal_paciente': { titulo: 'Fase 4: Prontuário', desc: 'Direitos dos pacientes no prontuário eletrônico.' },
+            'minijogoProf05_anonimizacao_pesquisa': { titulo: 'Fase 5: Pesquisa', desc: 'Processos de anonimização de dados na APS.' },
+            'minijogoProf06_criancas_pediatria': { titulo: 'Fase 6: Pediatria', desc: 'Cuidados com dados sensíveis de menores.' },
+            'minijogoProf07_gestao_administracao': { titulo: 'Fase 7: Gestão', desc: 'Boas práticas de gestão de dados.' },
+            'minijogoProf08_ciberseguranca_seguranca': { titulo: 'Fase 8: Auditoria', desc: 'Auditoria e defesa do Banco de Dados.' },
+            'minijogoProf09_incidente_seguranca': { titulo: 'Fase 9: Incidentes', desc: 'Tratamento de incidentes de segurança.' },
+
+            'minijogoUsuSus01_recepcao': { titulo: 'Fase 1: Recepção', desc: 'Identifique quais dados exigem mais proteção ao chegar na UBS.' },
+            'minijogoUsuSus02_triagem': { titulo: 'Fase 2: Triagem', desc: 'Saiba separar seus dados pessoais dos dados sensíveis de saúde.' },
+            'minijogoUsuSus03_consultorio': { titulo: 'Fase 3: Consultório', desc: 'Entenda como sua identidade é protegida em pesquisas.' },
+            'minijogoUsuSus04_exames': { titulo: 'Fase 4: Exames', desc: 'Identifique formas seguras de compartilhar seus resultados.' },
+            'minijogoUsuSus05_administracao': { titulo: 'Fase 5: Privacidade', desc: 'Descubra e exerça os seus direitos como titular dos dados.' },
+            'minijogoUsuSus06_consentimento': { titulo: 'Fase 6: Consentimento', desc: 'Aprenda em quais situações o seu consentimento é obrigatório.' }
+        };
+
+        const SAVE_KEY = 'lgpd_game_save_v2';
+        let perfilAtual = 'profissional';
+        let modoDev = false;
+        let progresso = {};
+        let faseAtivaPasta = null;
+
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('perfil')) perfilAtual = urlParams.get('perfil');
+            else {
+                // Recupera da memória se tiver
+                const salvo = localStorage.getItem('lgpd_ultimo_perfil');
+                if (salvo) perfilAtual = salvo;
+            }
+            if (urlParams.has('dev')) modoDev = urlParams.get('dev') === 'true';
+
+            atualizarTituloPerfil();
+            carregarProgresso();
+            renderizarFases();
+        };
+
+        function atualizarTituloPerfil() {
+            document.getElementById('txt-perfil-header').innerText = perfilAtual === 'profissional' ? "Profissional" : "Usuário do SUS";
+            localStorage.setItem('lgpd_ultimo_perfil', perfilAtual);
+        }
+
+        function alternarPerfil() {
+            perfilAtual = perfilAtual === 'profissional' ? 'usuario_sus' : 'profissional';
+            atualizarTituloPerfil();
+            renderizarFases();
+        }
+
+        function carregarProgresso() {
+            const save = localStorage.getItem(SAVE_KEY);
+            progresso = save ? JSON.parse(save) : {};
+        }
+        function salvarProgresso() { localStorage.setItem(SAVE_KEY, JSON.stringify(progresso)); }
+
+        function apagarProgresso() {
+            const nomePerfil = perfilAtual === 'profissional' ? "Profissional" : "Usuário do SUS";
+            document.getElementById('modal-texto-alerta').innerHTML = `Tem certeza de que deseja apagar o progresso do perfil <strong>${nomePerfil}</strong>?`;
+            document.getElementById('modal-confirmacao').classList.remove('oculto');
+        }
+        function fecharModalConfirmacao() { document.getElementById('modal-confirmacao').classList.add('oculto'); }
+        function confirmarApagarProgresso() {
+            const pastasDoPerfil = PASTAS[perfilAtual] || [];
+            pastasDoPerfil.forEach(nomePasta => { if (progresso[nomePasta]) delete progresso[nomePasta]; });
+            salvarProgresso(); renderizarFases(); fecharModalConfirmacao(); 
+        }
+
+        function renderizarFases() {
+            const lista = document.getElementById('lista-fases');
+            lista.innerHTML = ''; 
+            const pastasDoPerfil = PASTAS[perfilAtual] || [];
+
+            // Contadores de Conquista da Jornada
+            let fasesConcluidas = 0;
+            let estrelasObtidas = 0;
+            const totalFases = pastasDoPerfil.length;
+
+            pastasDoPerfil.forEach((nomePasta, index) => {
+                const metadado = METADADOS_FASES[nomePasta] || { titulo: `Fase ${index + 1}`, desc: '...' };
+                const numeroFase = index + 1;
+                
+                let liberada = false;
+                if (modoDev || index === 0) liberada = true;
+                else {
+                    const pastaAnterior = pastasDoPerfil[index - 1];
+                    if (progresso[pastaAnterior] && progresso[pastaAnterior].concluida) liberada = true;
+                }
+
+                const dados = progresso[nomePasta] || { concluida: false, pontuacaoMax: 0, melhorTempo: 0, melhorPrecisao: 0 };
+
+                let classesEstado = !liberada ? 'bloqueada' : (dados.concluida ? 'concluida' : 'destaque-atual');
+
+                // let numEstrelas = 0;
+                // if (dados.concluida) {
+                //     if (dados.melhorPrecisao === 100) numEstrelas = 3;
+                //     else if (dados.melhorPrecisao >= 85) numEstrelas = 2;
+                //     else numEstrelas = 1;
+                // }
+                let numEstrelas = 0;
+                let classeEstrela = 'ativa';
+
+                if (dados.concluida) {
+                    fasesConcluidas++; // Registra que a fase foi vencida
+
+                    // NOVA LÓGICA: Precisão + Tempo Restante
+                    if (dados.melhorPrecisao === 100) {
+                        // Acertou tudo e sobrou mais de 30 segundos = 3 Estrelas (Perfeição ágil)
+                        if (dados.melhorTempo >= 30) numEstrelas = 3;
+                        // Acertou tudo, mas foi devagar = 2 Estrelas
+                        else numEstrelas = 2; 
+                    } else if (dados.melhorPrecisao >= 80) {
+                        // Errou 1 item (ex: 83%), mas foi rápido (sobrou mais de 30s) = 2 Estrelas
+                        if (dados.melhorTempo >= 30) numEstrelas = 2;
+                        // Errou 1 item e foi devagar = 1 Estrela
+                        else numEstrelas = 1; 
+                    } else {
+                        // Passou na risca da meta (ex: 75%), mas foi rápido (sobrou mais de 30s) = 1 Estrela
+                        if (dados.melhorTempo >= 30) numEstrelas = 1;
+                        // Passou na risca da meta (ex: 75%) e foi devagar = 0 Estrela
+                        else numEstrelas = 0;
+                    }
+
+                    // if (numEstrelas < 3) {
+                    //     classeEstrela = 'ativa-clara';
+                    // }
+                    estrelasObtidas += numEstrelas; // Soma as estrelas para o placar final
+                }
+
+                // classesEstado = !liberada ? 'bloqueada' : (dados.concluida ? (numEstrelas === 3 ? 'mestre' : 'concluida') : 'destaque-atual');
+
+                const card = document.createElement('div');
+                card.className = `level-card ${classesEstado}`;
+                const tituloCurto = metadado.titulo.replace(/Fase \d+: /, ''); 
+
+                card.innerHTML = `
+                    <div class="level-number">${numeroFase}</div>
+                    <div class="level-title">${tituloCurto}</div>
+                    <div class="estrelas-container">
+                        <span class="estrela ${numEstrelas >= 1 ? classeEstrela : ''}">⭐</span>
+                        <span class="estrela ${numEstrelas >= 2 ? classeEstrela : ''}">⭐</span>
+                        <span class="estrela ${numEstrelas >= 3 ? classeEstrela : ''}">⭐</span>
+                    </div>
+                `;
+
+                if (liberada) card.onclick = () => abrirModalFase(nomePasta, metadado, dados, numEstrelas);
+                lista.appendChild(card);
+            });
+
+            // ================= LÓGICA DE DESTAQUE GERAL (HEADER E TELA) =================
+            const header = document.querySelector('header');
+            const labelHeader = document.querySelector('.perfil-label');
+
+            // Limpa os estados anteriores (Header e Body)
+            header.classList.remove('perfil-concluido', 'perfil-mestre');
+            document.body.classList.remove('vitoria-verde', 'vitoria-ouro');
+
+            if (fasesConcluidas === totalFases) {
+                // Checa se o jogador pegou o máximo possível de estrelas (3 x Número de Fases)
+                if (estrelasObtidas === (totalFases * 3)) {
+                    header.classList.add('perfil-mestre');
+                    labelHeader.innerText = "⭐ Especialista de Ouro ⭐";
+                    document.body.classList.add('vitoria-ouro');
+                    // ==========================================
+                    // NOVO: Pinta todos os cartões de dourado!
+                    // Busca todos os cartões gerados e adiciona a classe 'mestre'
+                    // ==========================================
+                    document.querySelectorAll('.level-card').forEach(card => {
+                        card.classList.add('mestre');
+                    });
+                } else {
+                    header.classList.add('perfil-concluido');
+                    labelHeader.innerText = "🏆 Jornada Concluída 🏆";
+                    document.body.classList.add('vitoria-verde');
+                }
+            } else {
+                // Estado normal se ainda faltarem fases
+                labelHeader.innerText = "Perfil Atual";
+            }
+        }
+
+        function abrirModalFase(nomePasta, metadado, dados, numEstrelas) {
+            // Ícone gamificado para substituir os "--"
+            const iconeVazio = '<span style="font-size: 20px; filter: grayscale(100%); opacity: 0.4;">🎮</span>';
+            const iconeMaisTempo = '<span style="font-size: 20px; filter: grayscale(100%); opacity: 0.4;">+⏱️</span>';
+
+            document.getElementById('modal-fase-titulo').innerText = metadado.titulo;
+            document.getElementById('modal-fase-desc').innerText = metadado.desc;
+            document.getElementById('modal-fase-pts').innerHTML = dados.concluida ? (dados.melhorTempo == 0 ? iconeMaisTempo : dados.pontuacaoMax) : iconeVazio;
+            document.getElementById('modal-fase-tempo').innerHTML = dados.concluida ? (dados.melhorTempo == 0 ? iconeMaisTempo : dados.melhorTempo + 's') : iconeVazio;
+            document.getElementById('modal-fase-precisao').innerHTML = dados.melhorPrecisao !== undefined && dados.concluida ? (dados.melhorTempo == 0 ? iconeMaisTempo : dados.melhorPrecisao + '%') : iconeVazio;
+
+            const modalPts = document.getElementById('modal-fase-pts');
+            const modalTempo = document.getElementById('modal-fase-tempo');
+            const modalPrecisao = document.getElementById('modal-fase-precisao');
+
+            // Limpa as cores (volta para o azul padrão) antes de reavaliar
+            modalPts.className = 'stat-valor';
+            modalTempo.className = 'stat-valor';
+            modalPrecisao.className = 'stat-valor';
+
+            // Aplica as cores Golden dependendo do desempenho
+            if (dados.concluida) {
+                // Tempo >= 30s fica Dourado
+                if (dados.melhorTempo >= 30) {
+                    modalTempo.classList.add('texto-gold');
+                }
+
+                // Precisão = 100% (Dourado) ou >= 80% (Dourado Claro)
+                if (dados.melhorPrecisao === 100) {
+                    modalPrecisao.classList.add('texto-gold'); // Pinta a precisão de Dourado
+                    modalPts.classList.add('texto-gold'); // Pinta a pontuação de Dourado também
+                } else if (dados.melhorPrecisao >= 80) {
+                    modalPrecisao.classList.add('texto-esmeralda'); // Pinta a precisão de Verde Esmeralda
+                    modalPts.classList.add('texto-esmeralda'); // Pinta a pontuação de Verde Esmeralda também
+                }
+            }
+
+            document.getElementById('modal-fase-estrelas').innerHTML = `
+                <span class="estrela maior ${numEstrelas >= 1 ? 'ativa' : ''}">⭐</span>
+                <span class="estrela maior ${numEstrelas >= 2 ? 'ativa' : ''}">⭐</span>
+                <span class="estrela maior ${numEstrelas >= 3 ? 'ativa' : ''}">⭐</span>
+            `;
+
+            document.getElementById('btn-iniciar-fase').onclick = () => {
+                fecharModalFase();
+                abrirMinijogo(nomePasta);
+            };
+            document.getElementById('modal-fase').classList.remove('oculto');
+        }
+
+        function fecharModalFase() { document.getElementById('modal-fase').classList.add('oculto'); }
+
+        function abrirMinijogo(nomePasta) {
+            faseAtivaPasta = nomePasta;
+            const wrapper = document.getElementById('game-wrapper');
+            const iframe = document.getElementById('game-iframe');
+            document.body.classList.add('jogo-aberto');
+
+            iframe.addEventListener('load', () => {
+                const tentarAcordarAudio = () => {
+                    try {
+                        const iframeWin = iframe.contentWindow;
+                        if (iframeWin.AudioSys && iframeWin.AudioSys.ctx && iframeWin.AudioSys.ctx.state === 'suspended') {
+                            iframeWin.AudioSys.ctx.resume();
+                        }
+                    } catch (e) {}
+                };
+                document.body.addEventListener('click', tentarAcordarAudio, { capture: true, once: true });
+                document.body.addEventListener('touchstart', tentarAcordarAudio, { capture: true, once: true });
+            }, { once: true });
+
+            iframe.src = nomePasta + '/index.html'; 
+            wrapper.style.display = 'flex';
+        }
+
+        function fecharMinijogo() {
+            document.getElementById('game-wrapper').style.display = 'none';
+            document.getElementById('game-iframe').src = ""; 
+            faseAtivaPasta = null;
+            document.body.classList.remove('jogo-aberto');
+        }
+
+        window.AvisarVitoria = function(engineObj) {
+            if (faseAtivaPasta) {
+                if (!progresso[faseAtivaPasta]) progresso[faseAtivaPasta] = { concluida: false, pontuacaoMax: 0, melhorTempo: 0, melhorPrecisao: 0 };
+                progresso[faseAtivaPasta].concluida = true;
+                
+                if (engineObj) {
+                    const pts = engineObj.pontuacao !== undefined ? engineObj.pontuacao : (engineObj.acertosTotais || 0);
+                    const tempo = engineObj.tempoRestante || 0;
+                    const acertos = engineObj.acertos || engineObj.acertosTotais || 0;
+                    const erros = engineObj.erros || engineObj.errosTotais || 0;
+                    let precisao = engineObj.precisao !== undefined ? engineObj.precisao : ((acertos + erros) > 0 ? Math.round((acertos / (acertos + erros)) * 100) : 100);
+                    
+                    if (pts > progresso[faseAtivaPasta].pontuacaoMax) progresso[faseAtivaPasta].pontuacaoMax = pts;
+                    if (tempo > progresso[faseAtivaPasta].melhorTempo) progresso[faseAtivaPasta].melhorTempo = tempo;
+                    if (precisao > (progresso[faseAtivaPasta].melhorPrecisao || 0)) progresso[faseAtivaPasta].melhorPrecisao = precisao;
+                }
+                salvarProgresso();
+            }
+            fecharMinijogo(); renderizarFases(); 
+        };
+
+        window.AvisarCancelamento = function() { fecharMinijogo(); };
+        function voltarParaMenu() { window.location.href = `menu_inicial/index.html?pular=true&modo2d=true&dev=${modoDev}`; }
+        
+    </script>
+    <script src="acessibilidade.js"></script>
+</body>
+</html>

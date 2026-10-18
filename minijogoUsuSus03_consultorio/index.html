@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, touch-action: none">
+    <title>Minijogo 3 - Usuário SUS (Consultório)</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="stylesheet" href="../minijogos.css">
+    <link rel="stylesheet" href="../acessibilidade.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <button class="btn-voltar" onclick="Engine.cancelar()">
+        <span aria-hidden="true">&#8592; Sair</span>
+        <span class="sr-only">Sair do minijogo e voltar ao menu principal</span>
+    </button>
+
+    <div class="hud">
+        <div class="hud-grupo">
+            <div class="hud-item" id="hud-tempo">
+                <span aria-hidden="true">⏳</span> <span id="valor-tempo">60s</span>
+                <span class="sr-only">Tempo restante no relógio</span>
+            </div>
+            <div class="hud-item hud-btn" id="btn-pausa" onclick="Engine.togglePausa()">
+                <span aria-hidden="true">⏸️</span>
+                <span class="sr-only">Pausar o jogo</span>
+            </div>
+            <div class="hud-item hud-btn" id="btn-mute" onclick="AudioSys.toggleMute()">
+                <span aria-hidden="true">🔊</span>
+                <span class="sr-only">Ativar ou desativar o som</span>
+            </div>
+        </div>
+        <div class="hud-item" id="hud-pontos-container">
+            <span aria-hidden="true">⭐</span> <span id="hud-pontos">0</span>
+            <span class="sr-only">Sua pontuação atual</span>
+        </div>
+    </div>
+
+    <!-- TELA DE INTRODUÇÃO -->
+    <div class="overlay" id="tela-intro">
+        <div class="painel-central">
+            <h2 id="txt-intro-titulo">Carregando...</h2>
+            <p id="txt-intro-desc"></p>
+
+            <div class="defin-wrapper">
+                <div id="txt-intro-defin" onclick="this.classList.toggle('expandido')">
+                    <span id="render-defin-curta" class="texto-curto"></span>
+                    <span id="render-defin-longa" class="texto-longo"></span>
+                </div>
+            </div>
+
+            <p id="txt-intro-dica"></p>
+            <p id="txt-intro-meta" style="font-size: 14px; color: #d32f2f; font-weight: bold;"></p>
+
+            <div class="opcoes-dificuldade">
+                <label class="switch-container">
+                    <div class="switch-textos">
+                        <span>Modo Aleatório</span>
+                        <small>(Embaralhar Fichas)</small>
+                    </div>
+                    <input type="checkbox" id="toggle-dificuldade" checked>
+                    <span class="slider"></span>
+                </label>
+                <label class="assistencia-label" title="Tempo Extra (+50% tempo)">
+                    <input type="checkbox" id="check-tempo-extra">
+                    <span class="assistencia-icone">+⏱️</span>
+                    <span class="sr-only">Ativar tempo extra de jogo</span>
+                </label>
+            </div>
+
+            <div class="botoes-coluna">
+                <button class="btn-acao" onclick="Engine.mostrarTutorial()">Iniciar</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.cancelar()">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DE TUTORIAL PRÁTICO -->
+    <div class="overlay oculto" id="tela-tutorial" style="pointer-events: none; z-index: 9999; background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;">
+        <div class="tutorial-animacao">
+            <div class="mao-ghost">👆</div>
+        </div>
+    </div>
+
+    <!-- TELA DE FIM -->
+    <div class="overlay oculto" id="tela-fim">
+        <div class="painel-central">
+            <h2 id="txt-fim-titulo">Fim</h2>
+            <p id="txt-fim-msg"></p>
+            <div class="texto-legal" id="txt-fim-lei"></div>
+            
+            <div class="estatisticas-fim">
+                <div class="stats-row">
+                    <div>Fichas:<span id="final-qtde" style="color: #424242;">0/0</span></div>
+                    <div>Tempo:<span id="final-tempo" style="color: var(--cor-tema-escuro);">0s</span></div>
+                    <div>Precisão:<span id="final-taxa">0%</span></div>
+                </div>
+                <div class="score-destaque">
+                    Pontuação Final
+                    <span id="final-pontos">0</span>
+                </div>
+            </div>
+
+            <div class="botoes-coluna" id="botoes-fim"></div>
+        </div>
+    </div>
+
+    <!-- ÁREA DE JOGO -->
+    <div class="area-jogo" id="area-jogo" style="display: none;">
+        
+        <div class="zona-alertas">
+            <div id="toast-feedback">
+                <h3 id="toast-titulo">Atenção</h3>
+                <span id="toast-texto"></span>
+            </div>
+            <div id="alerta-combo">⚠️ Cuidado. Você classificou várias fichas incorretamente.</div>
+        </div>
+
+        <div class="deck-area">
+            <div class="indicador-acao left" id="ind-descartar">
+                <!-- <span aria-hidden="true">❌ Identifica</span> -->
+                <span aria-hidden="true">❌ Descartar</span>
+                <span class="sr-only">Deslize para a esquerda para descartar dados que identificam o paciente.</span>
+            </div>
+            
+            <div class="cartoes-pilha" id="cartoes-pilha">
+                <!-- Cartões injetados via JS -->
+            </div>
+            
+            <div class="indicador-acao right" id="ind-aprovar">
+                <!-- <span aria-hidden="true">✅ Anônimo</span> -->
+                <span aria-hidden="true">✅ Aprovar</span>
+                <span class="sr-only">Deslize para a direita para aprovar dados anonimizados.</span>
+            </div>
+        </div>
+
+        <div class="controles-manuais">
+            <button class="btn-swipe btn-descartar" onclick="Engine.processarAcao('descartar')" aria-label="Descartar. Clica aqui se o dado identificar o paciente.">
+                <!-- <span aria-hidden="true">❌ Identifica</span> -->
+                <span aria-hidden="true">❌ Descartar</span>
+            </button>
+            <button class="btn-swipe btn-aprovar" onclick="Engine.processarAcao('aprovar')" aria-label="Aprovar. Clica aqui se o dado mantiver o anonimato.">
+                <!-- <span aria-hidden="true">✅ Anônimo</span> -->
+                <span aria-hidden="true">✅ Aprovar</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- TELA DE PAUSA -->
+    <div class="overlay oculto" id="tela-pausa">
+        <div class="painel-central" style="position: relative; min-height: 200px;">
+            <button onclick="Engine.esconderOverlayPausa()" 
+                style="position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">
+                <span aria-hidden="true">👁️</span>
+                <span class="sr-only">Esconder painel de pausa para ler a tela congelada</span>
+            </button>
+
+            <h1 style="font-size: 40px; color: var(--cor-tema-escuro); margin: 0;">PAUSADO</h1>
+            <p style="color: #201e1e; margin-top: 10px;">O cronômetro e os alertas estão congelados.</p>
+            
+            <div class="botoes-coluna" style="margin-top: 20px;">
+                <button class="btn-acao" onclick="Engine.togglePausa()">▶️ Retomar Jogo</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.iniciar()">🔄 Reiniciar Fase</button>
+                <button class="btn-acao btn-secundario" onclick="Engine.voltarAoMenu()">⏪ Introdução</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../minijogos.js"></script>
+    <script src="../acessibilidade.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
