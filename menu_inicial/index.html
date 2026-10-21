@@ -1307,6 +1307,15 @@
         }
 
         window.addEventListener('message', (event) => {
+            if (!event.data) return;
+            if (event.data.tipo === 'progresso-unity' || event.data.tipo === 'progresso-cena') {
+                atualizarProgressoUnity(event.data.valor);
+            } else if (event.data.tipo === 'unity-pronta' || event.data === 'cena-carregada') {
+                unityCarregou();
+            } else if (event.data === 'pular-para-perfil') {
+                pularParaPerfil();
+            }
+        });
 
         setInterval(() => {
             if (unityProntaLocal) return;
