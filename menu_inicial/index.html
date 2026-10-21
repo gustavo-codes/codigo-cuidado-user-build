@@ -936,14 +936,6 @@
                         <span class="spinner-carregando"></span>
                         <span id="texto-btn-jogar">Baixando cena... 0%</span>
                     </button>
-                    <div id="container-status-download" class="status-carregamento-container">
-                        <div id="status-carregamento-texto" class="status-carregamento-texto">
-                            📦 Baixando ambiente 3D... Por favor, aguarde.
-                        </div>
-                        <div class="barra-progresso-mini">
-                            <div id="barra-progresso-btn" class="barra-progresso-mini-fill"></div>
-                        </div>
-                    </div>
                 </div>
 
                 <button class="btn btn-secundario" onclick="mudarTela('view-tutoriais')">Tutoriais</button>
@@ -1264,19 +1256,11 @@
             
             const btnJogar = document.getElementById('btn-jogar');
             const textoBtn = document.getElementById('texto-btn-jogar');
-            const statusTexto = document.getElementById('status-carregamento-texto');
-            const barraProgresso = document.getElementById('barra-progresso-btn');
             const modalProgressoBar = document.getElementById('modal-progresso-bar');
             const modalProgressoNum = document.getElementById('modal-progresso-num');
             
             if (textoBtn && !unityProntaLocal) {
                 textoBtn.innerText = 'Baixando cena... ' + porcentagem + '%';
-            }
-            if (statusTexto && !unityProntaLocal) {
-                statusTexto.innerText = '📦 Baixando ambiente 3D (' + porcentagem + '%)...';
-            }
-            if (barraProgresso && !unityProntaLocal) {
-                barraProgresso.style.width = porcentagem + '%';
             }
             if (modalProgressoBar) {
                 modalProgressoBar.style.width = porcentagem + '%';
@@ -1297,12 +1281,7 @@
             const btnJogar = document.getElementById('btn-jogar');
             const textoBtn = document.getElementById('texto-btn-jogar');
             const spinner = btnJogar ? btnJogar.querySelector('.spinner-carregando') : null;
-            const statusTexto = document.getElementById('status-carregamento-texto');
-            const containerStatus = document.getElementById('container-status-download');
-            const barraProgresso = document.getElementById('barra-progresso-btn');
             
-            if (barraProgresso) barraProgresso.style.width = '100%';
-
             if (btnJogar) {
                 btnJogar.disabled = false;
                 btnJogar.classList.remove('btn-carregando');
@@ -1311,19 +1290,7 @@
                 btnJogar.style.cursor = 'pointer';
             }
 
-            if (statusTexto) {
-                statusTexto.innerText = '✨ Ambiente 3D pronto! Clique para iniciar.';
-                statusTexto.classList.add('pronto');
-            }
-
             fecharCarregamento();
-
-            if (containerStatus) {
-                setTimeout(() => {
-                    containerStatus.style.opacity = '0';
-                    setTimeout(() => { containerStatus.style.display = 'none'; }, 400);
-                }, 2000);
-            }
         }
 
         function clicarJogar() {
@@ -1340,15 +1307,6 @@
         }
 
         window.addEventListener('message', (event) => {
-            if (!event.data) return;
-            if (event.data.tipo === 'progresso-unity' || event.data.tipo === 'progresso-cena') {
-                atualizarProgressoUnity(event.data.valor);
-            } else if (event.data.tipo === 'unity-pronta' || event.data === 'cena-carregada') {
-                unityCarregou();
-            } else if (event.data === 'pular-para-perfil') {
-                pularParaPerfil();
-            }
-        });
 
         setInterval(() => {
             if (unityProntaLocal) return;
@@ -1395,7 +1353,8 @@
 
         function pularParaPerfil() {
             clearTimeout(splashTimer);
-            mudarTela('view-perfil');
+            // Build de perfil único: nunca mostra a tela de seleção de perfil.
+            mudarTela('view-menu');
         }
 
         // const urlParams = new URLSearchParams(window.location.search);
