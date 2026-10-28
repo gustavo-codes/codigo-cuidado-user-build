@@ -837,12 +837,12 @@
     <img src="images/fundo.jpg" class="bg-imagem-real" alt="Fundo">
     <div class="character-layer" id="doctor-bg"></div>
 
-    <div class="view active" id="view-splash">
+    <div class="view" id="view-splash">
         <img src="images/Logo.png" alt="Código Cuidado" class="logo-img" onerror="this.style.display='none';">
         <div class="bar-bg"><div class="bar-fill"></div></div>
     </div>
 
-    <div class="view" id="view-menu">
+    <div class="view active" id="view-menu">
         <div class="menu-card menu-horizontal">
             <!-- <button class="btn-icone btn-instalar" onclick="window.open(window.parent.location.href, '_blank')" title="Instalar como App">📱</button> -->
             <!-- HTML: Substituir o botão btn-instalar por este container -->
@@ -1352,8 +1352,8 @@
             // }
         });
 
-        // Sincronizar com a barra de carregamento, .bar-fill, que dura 1.5s, então o splash screen dura 1.6s para garantir que a animação termine antes de mudar de tela.
-        let splashTimer = setTimeout(() => { mudarTela('view-menu'); }, 1600);
+        // Splash removido: o menu abre direto, sem tela de carregamento inicial.
+        let splashTimer = null;
 
         function pularParaPerfil() {
             clearTimeout(splashTimer);
