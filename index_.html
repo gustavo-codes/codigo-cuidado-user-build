@@ -113,11 +113,18 @@
       @keyframes tc-pulso { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
       #tela-carregando .tc-texto { margin-top: 14px; font-weight: 700; font-size: 18px; }
       #tela-carregando .tc-voltar {
-        margin-top: 22px; background: #ffffff; color: #004357;
-        border: 3px solid #004357; padding: 10px 26px; font-size: 16px;
-        border-radius: 20px; cursor: pointer; font-weight: 700; font-family: sans-serif;
+        position: absolute; top: 25px; left: 25px;
+        width: 55px; height: 55px; padding: 0;
+        background-color: transparent; border: none; color: transparent;
+        background-image: url('menu_inicial/ui/a.png');
+        background-size: contain; background-repeat: no-repeat; background-position: center;
+        cursor: pointer; transition: transform 0.05s linear;
       }
-      #tela-carregando .tc-voltar:hover { background: #004357; color: #ffffff; }
+      #tela-carregando .tc-voltar:hover { transform: scale(1.08); background-color: transparent; }
+      #tela-carregando .tc-voltar:active { transform: scale(0.92); }
+      @media (max-width: 600px) {
+        #tela-carregando .tc-voltar { top: 15px; left: 15px; width: 45px; height: 45px; }
+      }
 
       @media screen and (max-height: 600px) and (orientation: landscape) {
         #game-wrapper {
@@ -159,7 +166,7 @@
         <img src="menu_inicial/images/Logo.png" alt="Código Cuidado" style="max-width: 250px; width: 60%; height: auto; margin-bottom: 25px; filter: drop-shadow(0 8px 15px rgba(0,67,87,0.15));" onerror="this.style.display='none';">
         <div class="tc-barra-vazia"><div class="tc-barra" id="tc-barra"></div></div>
         <div class="tc-texto" id="tc-texto">Baixando... 0%</div>
-        <button class="tc-voltar" id="tc-voltar" type="button">Voltar para a tela inicial</button>
+        <button class="tc-voltar" id="tc-voltar" type="button" aria-label="Voltar para a tela inicial" title="Voltar para a tela inicial"></button>
     </div>
 
     <div id="unity-container" class="unity-desktop">
