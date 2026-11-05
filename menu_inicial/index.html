@@ -253,39 +253,24 @@
             }
         }
 
-        /* O Tooltip de Instruções */
+        /* O Tooltip de Instruções — position: fixed e controlado por JS
+           (classe .aberto): dentro do .view/.menu-card ele seria cortado pelo
+           overflow-y: auto e pelo transform do .view. */
         .instalar-tooltip {
-            position: absolute;
-            /* bottom: -70px;           Fica alinhado com a base do botão */
-            bottom: 20px;           /* Fica alinhado com a base do botão */
-            left: 40px;          /* Nasce logo à direita do ícone do celular */
+            position: fixed;
+            display: none;
             width: 360px;        /* Largura fixa para não quebrar layout */
+            max-width: calc(100vw - 24px);
             background: #F1FFF8;
             border: 3px solid #004357;
             border-radius: 15px;
             padding: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            
-            /* Configurações de exibição (invisível até o hover) */
-            opacity: 0;
-            visibility: hidden;
-            /* transform: translateY(10px); */
-            /* transform: translateX(-10px); */
-            transition: all 0.3s ease;
-            /* z-index: 1; */
-            z-index: 100;
+            z-index: 15000;
             text-align: left;
-            pointer-events: none; /* Impede clique quando invisível */
         }
 
-        /* Mostra o tooltip quando passar o mouse no container */
-        .instalar-container:hover .instalar-tooltip,
-        .btn-instalar:focus + .instalar-tooltip {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
+        .instalar-tooltip.aberto { display: block; }
 
         /* Estilos de texto do tooltip */
         .instalar-tooltip h4 {
@@ -685,10 +670,8 @@
             /* Personagem 3D (Médico no fundo) */
             .character-layer { width: 30vh; right: 2%; }
 
-            /* --- CORREÇÃO 1: Tooltip do App (Compactado para caber no painel) --- */
+            /* --- CORREÇÃO 1: Tooltip do App (Compactado para caber na tela) --- */
             .instalar-tooltip {
-                bottom: -5px; /* Alinha o balão mais para baixo */
-                left: 45px;
                 width: 260px;
                 padding: 12px;
             }
@@ -848,30 +831,9 @@
             <!-- HTML: Substituir o botão btn-instalar por este container -->
             <div class="instalar-container">
                 <!-- O botão original modificado para não ativar de imediato, apenas focar -->
-                <button class="btn-icone btn-instalar" title="Instalar como App" tabindex="0">📱
+                <button class="btn-icone btn-instalar" id="btn-instalar" title="Instalar como App" tabindex="0">📱
                     <span class="sr-only">Instalar como App</span>
                 </button>
-
-                <!-- O Card de Instruções (Escondido por padrão, aparece no hover) -->
-                <div class="instalar-tooltip">
-                    <h4>Como instalar o jogo como um App?</h4>
-                    <p>Adicione o jogo à tela inicial do seu celular.</p>
-
-                    <!-- Instruções diretas (sem acordeao): aparecem ja abertas -->
-                    <div style="margin-bottom: 10px;">
-                        <div class="instrucao-so">
-                            <strong>
-                                <svg viewBox="0 0 384 512" width="12" height="12" fill="currentColor" style="vertical-align: middle; margin: 0 2px;"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
-                                iOS (Safari):</strong><br>
-                            Toque no ícone de Compartilhar <i class="fa-solid fa-arrow-up-from-bracket"></i> e selecione "Adicionar à Tela de Início".
-                        </div>
-                        
-                        <div class="instrucao-so">
-                            <strong>🤖 Android (Chrome):</strong><br>
-                            Toque no Menu <i class="fa-solid fa-ellipsis-vertical"></i> ou nos três pontos do navegador e escolha "Adicionar à tela inicial" ou "Instalar".
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="imagem-acessivel">
@@ -1529,7 +1491,77 @@
                 setTimeout(() => { document.getElementById('img-zoom-display').src = ""; }, 300);
             }
         }
+
+        // ===== Tooltip de instalacao do app (fora do .view, position: fixed) =====
+        // O div do tooltip fica no fim do body (depois deste script), entao
+        // espera o DOM terminar de carregar antes de procurar os elementos.
+        (function () {
+            function iniciar() {
+            var btn = document.getElementById('btn-instalar');
+            var tip = document.getElementById('tooltip-instalar');
+            if (!btn || !tip) return;
+            function posicionar() {
+                // Mede com o tooltip visivel mas invisivel na tela para pegar o tamanho real
+                tip.style.visibility = 'hidden';
+                tip.classList.add('aberto');
+                var r = btn.getBoundingClientRect();
+                var w = tip.offsetWidth, h = tip.offsetHeight;
+                // Nasce a direita do botao; se nao couber, vai para a esquerda.
+                // Base alinhada com o botao; nunca sai da viewport.
+                var left = Math.min(Math.max(8, r.right + 10), window.innerWidth - w - 8);
+                var top = Math.min(Math.max(8, r.bottom - h), window.innerHeight - h - 8);
+                tip.style.left = left + 'px';
+                tip.style.top = top + 'px';
+                tip.style.visibility = '';
+            }
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (tip.classList.contains('aberto')) {
+                    tip.classList.remove('aberto');
+                } else {
+                    posicionar();
+                }
+            });
+            // Fecha ao tocar fora do tooltip (o clique no botao ja foi tratado acima)
+            document.addEventListener('click', function (e) {
+                if (tip.classList.contains('aberto') && !tip.contains(e.target)) {
+                    tip.classList.remove('aberto');
+                }
+            });
+            window.addEventListener('resize', function () {
+                if (tip.classList.contains('aberto')) posicionar();
+            });
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', iniciar);
+            } else {
+                iniciar();
+            }
+        })();
     </script>
+
+    <!-- Card de instrucoes do app: FORA do .view/.menu-card de proposito —
+         esses containers tem overflow-y: auto (e transform no .view) e cortam
+         o tooltip quando ele cresce. Posicionado via JS junto ao botao. -->
+    <div class="instalar-tooltip" id="tooltip-instalar" role="dialog" aria-label="Como instalar o jogo como um App">
+        <h4>Como instalar o jogo como um App?</h4>
+        <p>Adicione o jogo à tela inicial do seu celular.</p>
+
+        <!-- Instruções diretas (sem acordeao): aparecem ja abertas -->
+        <div style="margin-bottom: 10px;">
+            <div class="instrucao-so">
+                <strong>
+                    <svg viewBox="0 0 384 512" width="12" height="12" fill="currentColor" style="vertical-align: middle; margin: 0 2px;"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+                    iOS (Safari):</strong><br>
+                Toque no ícone de Compartilhar <i class="fa-solid fa-arrow-up-from-bracket"></i> e selecione "Adicionar à Tela de Início".
+            </div>
+
+            <div class="instrucao-so">
+                <strong>🤖 Android (Chrome):</strong><br>
+                Toque no Menu <i class="fa-solid fa-ellipsis-vertical"></i> ou nos três pontos do navegador e escolha "Adicionar à tela inicial" ou "Instalar".
+            </div>
+        </div>
+    </div>
 
     <script src="../acessibilidade.js"></script>
 
