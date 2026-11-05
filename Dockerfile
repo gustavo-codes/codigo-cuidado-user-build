@@ -9,9 +9,13 @@ COPY index_.html /tmp/index_.html
 RUN set -e;     V=$(stat -c %s /tmp/build.data.br);     brotli -d /tmp/build.data.br -o /tmp/build.data.bin;     D=$(stat -c %s /tmp/build.data.bin);     CONST=$(awk -v d="$D" -v c="$V" 'BEGIN{printf "%.16f", 0.9*d/(2*c)}');     sed -e "s|\"/gat8paciente.loader.js\"|\"/gat8paciente.loader.js?v=$V\"|g"         -e "s|\"/gat8paciente.data.br\"|\"/gat8paciente.data.br?v=$V\"|g"         -e "s|\"/gat8paciente.framework.js.br\"|\"/gat8paciente.framework.js.br?v=$V\"|g"         -e "s|\"/gat8paciente.wasm.br\"|\"/gat8paciente.wasm.br?v=$V\"|g"         -e "s/?v=[0-9]*/?v=$V/g"         -e "s/PROGRESSO_FIM_DOWNLOAD = [0-9.]*/PROGRESSO_FIM_DOWNLOAD = $CONST/"         /tmp/index_.html > /tmp/index.html;     grep -q "PROGRESSO_FIM_DOWNLOAD = $CONST" /tmp/index.html;     grep -q "?v=$V" /tmp/index.html
 
 FROM nginx:alpine
-COPY nginx.conf /etc/nginx/nginx.conf
+# Template: o entrypoint oficial roda envsubst em /etc/nginx/templates/*.template
+# e gera o nginx.conf com a porta de $PORT (injetada pela Vercel em runtime).
+COPY nginx.conf /etc/nginx/templates/nginx.conf.template
 COPY . /usr/share/nginx/html
 COPY --from=calculadora /tmp/index.html /usr/share/nginx/html/index.html
 COPY ServiceWorker.canonical.js /usr/share/nginx/html/ServiceWorker.js
-EXPOSE 8091
+# Fallback para quando ninguem define PORT (ex.: docker run local / Coolify sem a env).
+ENV PORT=8080
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
