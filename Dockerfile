@@ -14,12 +14,17 @@ COPY Build/gat8paciente.data.br /tmp/br/gat8paciente.data.br
 COPY Build/gat8paciente.framework.js.br /tmp/br/gat8paciente.framework.js.br
 COPY Build/gat8paciente.wasm.br /tmp/br/gat8paciente.wasm.br
 COPY index_.html /tmp/index_.html
-# Servindo o data sem compressao, o Content-Length e o tamanho plano D; o
-# loader estima o total como 2x o Content-Length, entao o download "termina"
-# em 0.9*D/(2*D) = 0.45 e normalizamos para 100% (CONST fixa abaixo).
-RUN set -e;     mkdir -p /tmp/out;     for f in /tmp/br/*; do brotli -d "$f" -o "/tmp/out/$(basename "$f")"; done;     V=$(stat -c %s /tmp/out/gat8paciente.data.br);     CONST=0.45;     sed -e "s|\"/gat8paciente.loader.js\"|\"/gat8paciente.loader.js?v=$V\"|g"         -e "s|\"/gat8paciente.data.br\"|\"/gat8paciente.data.br?v=$V\"|g"         -e "s|\"/gat8paciente.framework.js.br\"|\"/gat8paciente.framework.js.br?v=$V\"|g"         -e "s|\"/gat8paciente.wasm.br\"|\"/gat8paciente.wasm.br?v=$V\"|g"         -e "s/?v=[0-9]*/?v=$V/g"         -e "s/PROGRESSO_FIM_DOWNLOAD = [0-9.]*/PROGRESSO_FIM_DOWNLOAD = $CONST/"         /tmp/index_.html > /tmp/index.html;     grep -q "PROGRESSO_FIM_DOWNLOAD = $CONST" /tmp/index.html;     grep -q "?v=$V" /tmp/index.html
+# Servindo o data sem compressao, o Content-Length e o tamanho plano e o
+# loader nao aplica fator de estimativa (total = Content-Length); o progresso
+# reportado e 0.9 * baixado/total, entao o download "termina" em 0.9 e
+# normalizamos para 100% (o 0.1 restante e a fase de inicializacao).
+RUN set -e;     mkdir -p /tmp/out;     for f in /tmp/br/*; do brotli -d "$f" -o "/tmp/out/$(basename "$f")"; done;     V=$(stat -c %s /tmp/out/gat8paciente.data.br);     CONST=0.9;     sed -e "s|\"/gat8paciente.loader.js\"|\"/gat8paciente.loader.js?v=$V\"|g"         -e "s|\"/gat8paciente.data.br\"|\"/gat8paciente.data.br?v=$V\"|g"         -e "s|\"/gat8paciente.framework.js.br\"|\"/gat8paciente.framework.js.br?v=$V\"|g"         -e "s|\"/gat8paciente.wasm.br\"|\"/gat8paciente.wasm.br?v=$V\"|g"         -e "s/?v=[0-9]*/?v=$V/g"         -e "s/PROGRESSO_FIM_DOWNLOAD = [0-9.]*/PROGRESSO_FIM_DOWNLOAD = $CONST/"         /tmp/index_.html > /tmp/index.html;     grep -q "PROGRESSO_FIM_DOWNLOAD = $CONST" /tmp/index.html;     grep -q "?v=$V" /tmp/index.html
 
 FROM nginx:alpine
+# Remove o default.conf da imagem base: incluido antes do nosso (ordem
+# alfabetica), ele virava o server padrao da porta 80 e recebia todo o
+# trafego com o config generico (octet-stream, sem nossos cache-control).
+RUN rm -f /etc/nginx/conf.d/default.conf
 # Template: o entrypoint oficial roda envsubst em /etc/nginx/templates/*.template
 # e gera o nginx.conf com a porta de $PORT (injetada pela Vercel em runtime).
 COPY nginx.conf /etc/nginx/templates/nginx.conf.template
