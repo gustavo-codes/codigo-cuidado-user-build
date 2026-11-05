@@ -350,10 +350,15 @@
         if (event.data && event.data.tipo === 'jogar-agora') {
           window.perfilPendente = event.data.perfil;
           window.carregamentoCancelado = false;
-          mostrarTelaCarregamento();
-          // Só entra no jogo se a Unity JÁ estiver pronta; senão, o .then do
-          // createUnityInstance chama iniciarAposCarregamento() quando terminar.
-          if (window.unityPronta) iniciarAposCarregamento();
+          // Unity já carregada (o jogador já entrou antes e voltou): pula a
+          // tela de carregamento e entra direto. Senão, mostra a tela e o .then
+          // do createUnityInstance chama iniciarAposCarregamento() ao terminar.
+          if (window.unityPronta) {
+            esconderTelaCarregamento();
+            iniciarAposCarregamento();
+          } else {
+            mostrarTelaCarregamento();
+          }
         }
       });
 
